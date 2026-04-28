@@ -5,7 +5,11 @@ const pool = require('../../bd/bd');
 // GET todos servicos
 router.get('/', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT id, descricao FROM servico');
+    const [rows] = await pool.query(`
+    SELECT id, descricao, categoria
+    FROM servico
+    ORDER BY categoria, descricao
+  `);
     res.json(rows);
   } catch (err) {
     console.error(err);

@@ -34,7 +34,25 @@ const AddColaborador = () => {
 
     const [previewFoto, setPreviewFoto] = useState(null);
     const [aberto, setAberto] = useState(null); // Controla qual está aberto
+    const [carregado, setCarregado] = useState(false);
 
+    const [selecionados, setSelecionados] = useState([]);
+
+    const toggleServico = (id) => {
+        setSelecionados(prev =>
+            prev.includes(id)
+                ? prev.filter(i => i !== id)
+                : [...prev, id]
+        );
+    };
+    const mudarAba = async (aba) => {
+        setAbaAtiva(aba);
+
+        if (aba === "Serviços" && !carregado) {
+            await carregarServicos();
+            setCarregado(true);
+        }
+    };
 
     const toggle = (index) => {
         setAberto(aberto === index ? null : index);
@@ -174,9 +192,57 @@ const AddColaborador = () => {
             ]
         }
     ];
+
     // Const para gerar o colaborador e captar seu id
     const [colaboradorId, setColaboradorId] = useState(null);
+    const [categoriaServicos, setCategoriasServicos] = useState([]);
 
+    //salvar serviços
+    const salvarColServico = () => {
+        const dados = selecionados.map((idServico) => ({
+            id_servico: idServico,
+            id_colaborador: colaboradorId,
+        }));
+    
+        axios.post('http://localhost:3000/colaborador_servico', dados)
+            .then(() => {
+                toast.success("Serviços salvos!");
+                proximaAba();
+            })
+            .catch(() => toast.error('Erro ao salvar serviços do colaborador'));
+    };
+
+
+    const carregarServicos = async () => {
+        try {
+            const { data } = await axios.get('http://localhost:3000/servicos');
+            setCategoriasServicos(agruparPorCategoria(data));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const agruparPorCategoria = (dados) => {
+        const mapa = {};
+
+        dados.forEach(servico => {
+            const categoria = servico.categoria || "Outros";
+
+            if (!mapa[categoria]) {
+                mapa[categoria] = {
+                    titulo: categoria,
+                    itens: []
+                };
+            }
+
+            mapa[categoria].itens.push({
+                id: servico.id,
+                nome: servico.descricao
+            });
+        });
+
+        return Object.values(mapa);
+    };
 
     const salvarColaborador = () => {
         axios.post('http://localhost:3000/colaboradores', {
@@ -189,28 +255,28 @@ const AddColaborador = () => {
             vinculo: tipoVinculo,
             local_trabalho: localTrabalho
         })
-        .then((resposta) => {
-            console.log('Resposta da API:', resposta.data.id); // Adicionado para verificar o JSON retornado
-            const id = resposta.data.id; // Captura o ID retornado pela API
-            setColaboradorId(id); // Armazena o ID no estado
-            proximaAba(); // Avança para a próxima aba
-            toast.success('Colaborador salvo!');
-        })
-        .catch((error) => {
-            console.error('Erro ao salvar colaborador:', error); // Adicionado para verificar erros
-            toast.error('Erro ao salvar colaborador');
-        });
+            .then((resposta) => {
+                console.log('Resposta da API:', resposta.data.id);
+                const id = resposta.data.id;
+                setColaboradorId(id);
+                proximaAba();
+                toast.success('Colaborador salvo!');
+            })
+            .catch((error) => {
+                console.error('Erro ao salvar colaborador:', error); // Adicionado para verificar erros
+                toast.error('Erro ao salvar colaborador');
+            });
     };
 
     // Salvar pagamento do colaborador
     const salvarPagColaborador = () => {
         const comissaoDecimal = porcentagem_comissao
-        ? parseFloat(porcentagem_comissao.replace('%', '')) / 100
-        : 0;
+            ? parseFloat(porcentagem_comissao.replace('%', '')) / 100
+            : 0;
         const salDecimal = parseFloat(salario_fixo.replace(',', '.')) || 0;
         const alimentacaoDecimal = parseFloat(vale_alimentacao.replace(',', '.')) || 0;
         const transporteDecimal = parseFloat(vale_transporte.replace(',', '.')) || 0;
-        
+
         axios.post('http://localhost:3000/pagColaboradores', {
             salario_fixo: salDecimal,
             tipo_chave_pix,
@@ -340,7 +406,7 @@ const AddColaborador = () => {
                     {["Dados Pessoais", "Vínculo e Função", "Pagamento", "Serviços"].map((status) => (
                         <button
                             key={status}
-                            onClick={() => setAbaAtiva(status)}
+                            onClick={() => mudarAba(status)}
                             className={`px-4 py-2 text-sm font-semibold transition ${abaAtiva === status ? "font-bold text-amber-900 border-b-2 border-amber-500" : "hover:bg-gray-300"
                                 }`}
                         >
@@ -586,7 +652,7 @@ const AddColaborador = () => {
                 {abaAtiva === "Serviços" && (
                     <div className='p-4 mt-4'>
                         <div className="space-y-4">
-                            {categoriasServicos.map((cat, index) => (
+                            {categoriaServicos.map((cat, index) => (
                                 <div key={index} className="border-b border-gray-200 py-2">
                                     <button
                                         onClick={() => toggle(index)}
@@ -600,7 +666,10 @@ const AddColaborador = () => {
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 transition-all">
                                             {cat.itens.map(servico => (
                                                 <label key={servico.id} className="flex items-center gap-2 text-amber-900 text-sm">
-                                                    <input type="checkbox" className="
+                                                    <input type="checkbox"
+                                                        checked={selecionados.includes(servico.id)}
+                                                        onChange={() => toggleServico(servico.id)}
+                                                        className="
                                             appearance-none 
                                             w-5 h-5
                                             border-2 border-gray-400 
@@ -629,7 +698,7 @@ const AddColaborador = () => {
                             ))}
                         </div>
                         <div className="flex justify-center w-full">
-                            <button className='p-2 font-bold flex gap-2 bg-green-500 rounded-md text-white hover:bg-green-600 transition'>
+                            <button onClick={salvarColServico} className='p-2 font-bold flex gap-2 bg-green-500 rounded-md text-white hover:bg-green-600 transition'>
                                 <i className="bi bi-floppy2-fill"></i>
                                 <span>Salvar Dados</span>
                             </button>
