@@ -8,6 +8,17 @@ const Serviços = () => {
   const [isModalEditServico, setModalEditServico] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState(null);
 
+  // CÁLCULO DE PREÇO DO SERVIÇO
+  const [precoServico, setPrecoServico] = useState(0);
+  const [comissaoPercentual, setComissaoPercentual] = useState(0);
+  const [taxaNoShow, setTaxaNoShow] = useState(0);
+
+  // PREÇO DA COMISSÃO
+  const valorComissaoRS = (Number(precoServico) * Number(comissaoPercentual)) / 100;
+
+  // PREÇO FINAL
+  const precoFinal = Number(precoServico) + Number(taxaNoShow);
+
   const dummyServicos = [
     { id: 1, nome: "Hidratação Profunda", categoria: "Cabelo", preco: 80.00, duracao: "60 min", comissao: "40%", descricao: "Tratamento intenso para fios ressecados." },
     { id: 2, nome: "Limpeza de Pele", categoria: "Estética", preco: 120.00, duracao: "90 min", comissao: "50%", descricao: "Extração de cravos e revitalização facial." }
@@ -131,20 +142,48 @@ const Serviços = () => {
 
                 {/* FINANCEIRO */}
                 <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 flex flex-col gap-3">
-                  <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Financeiro</h4>
+                  <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Valor do Serviço</h4>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="flex flex-col gap-1">
-                      <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Preço de Venda</label>
-                      <input type="number" placeholder="0,00" className="border border-gray-200 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-green-500" />
+                      <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Preço do Serviço</label>
+                      <input 
+                        type="number" 
+                        value={precoServico}
+                        onChange={e => setPrecoServico(e.target.value)}
+                        className="w-full border p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-amber-500" 
+                        placeholder="0.00"
+                      />
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Comissão (%)</label>
-                      <input type="number" placeholder="30" className="border border-gray-200 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-amber-500" />
+                      <input 
+                        type="number" 
+                        value={comissaoPercentual}
+                        onChange={e => setComissaoPercentual(e.target.value)}
+                        className="w-full border p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-amber-500" 
+                        placeholder="Ex: 40"
+                      />
                     </div>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Custo de Material (R$)</label>
-                    <input type="number" placeholder="Insumos" className="border border-gray-200 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-red-400" />
+                    <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Taxa de no-show</label>
+                    <input 
+                      type="number" 
+                      value={taxaNoShow}
+                      onChange={e => setTaxaNoShow(e.target.value)}
+                      className="border border-gray-200 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-red-400" 
+                      placeholder="Valor cobrado em faltas"
+                    />
+                  </div>
+                  <div className="mt-2 p-3 bg-white rounded-lg border border-amber-200">
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-gray-500">O profissional receberá:</span>
+                      <span className="font-bold text-green-600">R$ {valorComissaoRS.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-black border-t pt-1">
+                      <span className="text-gray-800">PREÇO FINAL AO CLIENTE:</span>
+                      <span className="text-amber-700">R$ {precoFinal.toFixed(2)}</span>
+                    </div>
                   </div>
                 </div>
 

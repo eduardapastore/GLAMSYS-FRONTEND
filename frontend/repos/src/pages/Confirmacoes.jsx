@@ -53,6 +53,15 @@ const Confirmacoes = () => {
             <section className="p-6 flex-1 h-full overflow-y-auto flex flex-col gap-4">
                 <div className='flex justify-between items-center'>
                     <h2 className='font-bold text-2xl text-gray-800'>Confirmações</h2>
+                    <div className="flex gap-2">
+                        <input 
+                        type="text" placeholder=" Pesquisar..." 
+                        className="w-64 border p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
+                        />
+                        <button className="p-2 w-10 h-10 bg-amber-600 rounded-md text-white hover:bg-amber-700 transition-all">
+                        <i className="bi bi-search"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div className='p-4 rounded-xl shadow-sm border  flex-1'>

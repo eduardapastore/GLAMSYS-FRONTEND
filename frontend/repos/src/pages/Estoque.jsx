@@ -249,6 +249,9 @@ const Estoque = () => {
 
           {aba === "produtos" && (
             <div>
+              <div>
+                AAAA
+              </div>
               {produtos.map(p => (
                 <div key={p.id} className="p-3 border-b last:border-0 flex justify-between items-center align-middle bg-amber-50 mb-2 rounded-md shadow-sm">
                   <div>

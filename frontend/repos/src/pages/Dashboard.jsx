@@ -94,49 +94,8 @@ const Dashboard = () => {
       <Navbar />
       <main className='p-6 w-screen h-full'>
         <h2 className="text-xl font-semibold mb-4">Dashboard</h2>
-        <div className='flex justify-center gap-24 mb-3'>
-          {/* gráfico 1 */}
-          <div>
-            <h3 className='font-bold text-xs'>Agendamentos</h3>
-            <div className="bg-transparent p-2 rounded-2xl text-xs">
-              <LineChart width={250} height={150} data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <RechartsTooltip />
-                <Line type="monotone" dataKey="valor" stroke="#ea580c" strokeWidth={3} />
-              </LineChart>
-            </div>
-          </div>
-
-        </div>
-
-        {/* tabela */}
-        <div className="max-h-[40vh] w-full overflow-y-auto rounded-md border">
-          <table className="min-w-full bg-orange-50">
-            <thead>
-              <tr className="bg-orange-100 text-orange-800 border-b">
-                <th className="p-3 text-left">Nome</th>
-                <th className="p-3 text-left">Data</th>
-                <th className="p-3 text-left">Horário</th>
-                <th className="p-3 text-left">Procedimento</th>
-                <th className="p-3 text-left">Contato</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {agendamentos.map(item => (
-                <tr key={item.id} className="border-b hover:bg-gray-50">
-                  <td className="p-3">{item.cliente_nome}</td>
-                  <td className="p-3">{formatarData(item.data)}</td>
-                  <td className="p-3">{formatarHora(item.hora)}</td>
-                  <td className="p-3">{item.servico_nome}</td>
-                  <td className="p-3">{item.telefone}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        
+        
       </main>
     </div>
   )

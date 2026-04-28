@@ -115,44 +115,50 @@ const dispararWhatsApp = (cliente) => {
       <div className='p-6 w-screen h-full overflow-y-auto'>
           <div className='flex justify-between mb-3'>
             <h1 className='font-bold text-2xl text-gray-900' >Clientes</h1>
-            <button onClick={() => setisModalAddCliente(true)}
-            className='flex gap-2 p-2 font-bold text-xl items-center rounded-md align-middle bg-amber-600 text-gray-50 hover:bg-amber-700 shadow-md'>
-              <i className="bi bi-plus-circle text-xs"></i>
-              <span className='text-sm'>Adicionar Cliente</span>
-            </button>
+            <div className='flex gap-2'>
+              <button className='p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50'>
+                <i className="bi bi-clipboard2-data"></i>
+                Relatório
+              </button>
+              <button onClick={() => setisModalAddCliente(true)}
+                className='flex gap-2 p-2 font-bold text-xl items-center rounded-md align-middle bg-amber-600 text-gray-50 hover:bg-amber-700 shadow-md'>
+                <i className="bi bi-plus-circle text-xs"></i>
+                <span className='text-sm'>Adicionar Cliente</span>
+              </button>
+            </div>
           </div>
 
           {/* DASH DE CLIENTES */}
           <div className='flex justify-between gap-4 font-semibold text-amber-50'>
             <div className='flex gap-4 bg-amber-700 p-3 text-xs rounded-md items-center shadow-md'>
-                <i class="bi bi-people text-xl"></i>
+                <i class="bi bi-people text-3xl"></i>
                 <div>
                   <p className='font-semibold'>Total de Clientes</p>
-                  <p className='text-xs'>10</p>
+                  <p className='text-lg'>10</p>
                 </div>
             </div>
 
-            <div className='flex gap-4 bg-amber-800 p-3 text-xs rounded-md items-center shadow-md'>
-                <i className="bi bi-person-add text-xl"></i>
+            <div className='flex gap-4 bg-amber-700 p-3 text-xs rounded-md items-center shadow-md'>
+                <i className="bi bi-person-add text-3xl"></i>
                 <div>
                   <p className='font-semibold'>Clientes Novos no Mês</p>
-                  <p className='text-xs'>10</p>
+                  <p className='text-lg'>10</p>
                 </div>
             </div>
 
-            <div className='flex gap-4 bg-amber-900 p-3 text-xs rounded-md items-center shadow-md'>
-                <i class="bi bi-cake2 text-xl"></i>
+            <div className='flex gap-4 bg-amber-700 p-3 text-xs rounded-md items-center shadow-md'>
+                <i class="bi bi-cake2 text-3xl"></i>
                 <div>
                   <p className='font-semibold'>Aniversariantes do Dia</p>
-                  <p className='text-xs'>9</p>
+                  <p className='text-lg'>9</p>
                 </div>
             </div>
 
-            <div className='flex gap-4 bg-amber-950 p-3 text-xs rounded-md items-center shadow-md'>
-                <i class="bi bi-bag-heart text-xl"></i>
+            <div className='flex gap-4 bg-amber-700 p-3 text-xs rounded-md items-center shadow-md'>
+                <i class="bi bi-bag-heart text-3xl"></i>
                 <div>
                   <p className='font-semibold'>Serviço Mais Contratado</p>
-                  <p className='text-xs font-light'>Tratamento de Hidratação</p>
+                  <p className='text-base font-light'>Tratamento de Hidratação</p>
                 </div>
             </div>
           </div>
