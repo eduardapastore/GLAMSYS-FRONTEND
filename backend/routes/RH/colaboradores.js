@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
     res.json({ 
       success: true, 
       message: 'Colaborador inserido com sucesso!', 
-      id: result.insertId // Adiciona o ID gerado na resposta
+      id: result.insertId // Adiciona o id gerado na resposta
     });
   } catch (error) {
     console.error('Erro ao inserir colaborador:', error);
