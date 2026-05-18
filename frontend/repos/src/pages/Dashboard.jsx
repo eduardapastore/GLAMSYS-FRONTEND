@@ -30,7 +30,6 @@ const Dashboard = () => {
       ]));
   }, []);
 
-  // Lógica de cálculo unificada
   let totalEntradas = 0, totalSaidas = 0;
   const financeiroPorMes = {};
 
