@@ -164,12 +164,6 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-
-        {/* ESPAÇO LIVRE ABAIXO PARA SUAS PRÓXIMAS IMPLEMENTAÇÕES */}
-        <div className="w-full flex flex-col gap-4">
-          {/* Pode largar seus novos componentes aqui (Tabelas, cards de serviços, etc.) */}
-        </div>
-
       </main>
     </div>
   );
