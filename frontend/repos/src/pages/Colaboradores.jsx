@@ -273,7 +273,14 @@ const Colaboradores = () => {
                   }`}
               >
                 <div className='flex gap-2'>
-                  <img src={colaborador.foto} alt={colaborador.nome} className="w-12 h-12 bg-gray-300 rounded-full" />
+                  <img
+                    src={`http://localhost:3000/colaboradores/foto/${colaborador.id}`}
+                    alt={colaborador.nome}
+                    className="w-12 h-12 rounded-full object-cover bg-gray-300"
+                    onError={(e) => {
+                      e.target.src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                    }}
+                  />
                   <div>
                     <p className="font-semibold text-amber-950">{colaborador.nome}</p>
                     <p className="text-xs text-gray-600">{colaborador.id}</p>
