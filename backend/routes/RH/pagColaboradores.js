@@ -4,7 +4,15 @@ const pool = require('../../bd/bd');
 
 router.get('/', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM pagamento_colaborador');
+    const [rows] = await pool.query(`
+      SELECT 
+        pagamento_colaborador.*,
+        colaboradores.nome AS colaborador_nome
+      FROM pagamento_colaborador
+      INNER JOIN colaboradores 
+        ON colaboradores.id = pagamento_colaborador.colaborador_id
+    `);
+
     res.json(rows);
   } catch (err) {
     console.error(err);
