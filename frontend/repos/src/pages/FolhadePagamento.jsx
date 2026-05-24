@@ -173,150 +173,168 @@ const FolhadePagamento = () => {
 
             </div>
 
-            <div className='p-6 pt-2 w-full flex flex-col gap-3'>
+            <div className='p-6 pt-2 w-full grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto'>
 
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>
-                Colaborador
-              </label>
+              <div className='md:col-span-2'>
+                <label className='text-[10px] font-bold text-gray-600 uppercase'>
+                  Colaborador
+                </label>
 
-              <Select
-                options={colaboradores}
-                onChange={(selected) =>
-                  setFormData({
-                    ...formData,
-                    colaborador_id: selected.value
-                  })
-                }
-              />
+                <Select
+                  options={colaboradores}
+                  onChange={(selected) =>
+                    setFormData({
+                      ...formData,
+                      colaborador_id: selected.value
+                    })
+                  }
+                />
+              </div>
 
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>
-                Salário Fixo
-              </label>
+              <div>
+                <label className='text-[10px] font-bold text-gray-600 uppercase'>
+                  Salário Fixo
+                </label>
 
-              <input
-                type="number"
-                step="0.01"
-                value={formData.salario_fixo}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    salario_fixo: e.target.value
-                  })
-                }
-                className='border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
-              />
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.salario_fixo}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      salario_fixo: e.target.value
+                    })
+                  }
+                  className='w-full border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
+                />
+              </div>
 
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>
-                Tipo chave pix
-              </label>
+              <div>
+                <label className='text-[10px] font-bold text-gray-600 uppercase'>
+                  Comissão %
+                </label>
 
-              <input
-                type="text"
-                value={formData.tipo_chave_pix}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    tipo_chave_pix: e.target.value
-                  })
-                }
-                className='border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
-              />
+                <input
+                  type="number"
+                  value={formData.porcentagem_comissao}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      porcentagem_comissao: e.target.value
+                    })
+                  }
+                  className='w-full border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
+                />
+              </div>
 
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>
-                Chave pix
-              </label>
+              <div>
+                <label className='text-[10px] font-bold text-gray-600 uppercase'>
+                  Tipo chave pix
+                </label>
 
-              <input
-                type="text"
-                value={formData.chave_pix}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    chave_pix: e.target.value
-                  })
-                }
-                className='border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
-              />
+                <input
+                  type="text"
+                  value={formData.tipo_chave_pix}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      tipo_chave_pix: e.target.value
+                    })
+                  }
+                  className='w-full border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
+                />
+              </div>
 
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>
-                Comissão %
-              </label>
+              <div>
+                <label className='text-[10px] font-bold text-gray-600 uppercase'>
+                  Chave pix
+                </label>
 
-              <input
-                type="number"
-                value={formData.porcentagem_comissao}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    porcentagem_comissao: e.target.value
-                  })
-                }
-                className='border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
-              />
+                <input
+                  type="text"
+                  value={formData.chave_pix}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      chave_pix: e.target.value
+                    })
+                  }
+                  className='w-full border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
+                />
+              </div>
 
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>
-                Agência
-              </label>
+              <div>
+                <label className='text-[10px] font-bold text-gray-600 uppercase'>
+                  Agência
+                </label>
 
-              <input
-                type="text"
-                value={formData.agencia}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    agencia: e.target.value
-                  })
-                }
-                className='border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
-              />
+                <input
+                  type="text"
+                  value={formData.agencia}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      agencia: e.target.value
+                    })
+                  }
+                  className='w-full border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
+                />
+              </div>
 
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>
-                Número da conta
-              </label>
+              <div>
+                <label className='text-[10px] font-bold text-gray-600 uppercase'>
+                  Número da conta
+                </label>
 
-              <input
-                type="text"
-                value={formData.numero_conta}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    numero_conta: e.target.value
-                  })
-                }
-                className='border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
-              />
+                <input
+                  type="text"
+                  value={formData.numero_conta}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      numero_conta: e.target.value
+                    })
+                  }
+                  className='w-full border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
+                />
+              </div>
 
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>
-                Vale alimentação
-              </label>
+              <div>
+                <label className='text-[10px] font-bold text-gray-600 uppercase'>
+                  Vale alimentação
+                </label>
 
-              <input
-                type="number"
-                value={formData.vale_alimentacao}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    vale_alimentacao: e.target.value
-                  })
-                }
-                className='border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
-              />
+                <input
+                  type="number"
+                  value={formData.vale_alimentacao}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      vale_alimentacao: e.target.value
+                    })
+                  }
+                  className='w-full border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
+                />
+              </div>
 
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>
-                Vale transporte
-              </label>
+              <div>
+                <label className='text-[10px] font-bold text-gray-600 uppercase'>
+                  Vale transporte
+                </label>
 
-              <input
-                type="number"
-                value={formData.vale_transporte}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    vale_transporte: e.target.value
-                  })
-                }
-                className='border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
-              />
+                <input
+                  type="number"
+                  value={formData.vale_transporte}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      vale_transporte: e.target.value
+                    })
+                  }
+                  className='w-full border border-gray-400 p-2 rounded-md text-sm outline-none focus:border-amber-600'
+                />
+              </div>
 
             </div>
 
