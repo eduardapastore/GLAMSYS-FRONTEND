@@ -78,4 +78,50 @@ router.get('/detalhes2', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar agendamentos detalhados' });
   }
 });
+
+router.get('/cliente/:id/resumo', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+
+    // PRÓXIMO AGENDAMENTO
+    const [proximo] = await pool.query(`
+      SELECT 
+        DATE_FORMAT(a.data, '%d/%m/%Y') AS data,
+        a.hora,
+        s.descricao AS servico
+      FROM agendamentos a
+      LEFT JOIN servico s ON a.servico_id = s.id
+      WHERE a.cliente_id = ?
+      AND CONCAT(a.data, ' ', a.hora) >= NOW()
+      ORDER BY a.data ASC, a.hora ASC
+      LIMIT 1
+    `, [id]);
+
+    // ÚLTIMO SERVIÇO
+    const [ultimo] = await pool.query(`
+      SELECT 
+        DATE_FORMAT(a.data, '%d/%m/%Y') AS data,
+        a.hora,
+        s.descricao AS servico
+      FROM agendamentos a
+      LEFT JOIN servico s ON a.servico_id = s.id
+      WHERE a.cliente_id = ?
+      AND CONCAT(a.data, ' ', a.hora) < NOW()
+      ORDER BY a.data DESC, a.hora DESC
+      LIMIT 1
+    `, [id]);
+
+    res.json({
+      proximoAgendamento: proximo[0] || null,
+      ultimoServico: ultimo[0] || null
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'Erro ao buscar resumo do cliente'
+    });
+  }
+});
 module.exports = router;

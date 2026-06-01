@@ -13,6 +13,7 @@ const Colaboradores = () => {
   const [viewMode, setViewMode] = useState("GRID");
   const [colaboradorSelecionado, setColaboradorSelecionado] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [pagamento, setPagamento] = useState(null);
 
   // GET colaboradores (mantido igual)
   useEffect(() => {
@@ -26,15 +27,18 @@ const Colaboradores = () => {
 
   //axios
   useEffect(() => {
-  axios.get('http://localhost:3000/colaboradores/quantidade')
-    .then(response => {
-      setQuantidade(response.data.total);
-    })
-    .catch(error => {
-      console.log("Erro:", error);
-    });
-}, []);
+    axios.get('http://localhost:3000/colaboradores/quantidade')
+      .then(response => {
+        setQuantidade(response.data.total);
+      })
+      .catch(error => {
+        console.log("Erro:", error);
+      });
+  }, []);
 
+  const formatarData = (data) => {
+    return new Date(data).toLocaleDateString('pt-BR');
+  };
   // busca
   const buscarColaborador = () => {
     if (!busca.trim()) {
@@ -53,6 +57,14 @@ const Colaboradores = () => {
   const abrirModal = (colaborador) => {
     setColaboradorSelecionado(colaborador);
     setModalOpen(true);
+    axios.get(`http://localhost:3000/pagColaboradores/${colaborador.id}`)
+      .then(response => {
+        setPagamento(response.data);
+      })
+      .catch(() => {
+        toast.error('Erro ao carregar dados de pagamento');
+        setPagamento(null);
+      });
   };
 
   const fecharModal = () => {
@@ -62,97 +74,97 @@ const Colaboradores = () => {
 
   //dados de teste
   useEffect(() => {
-  const dadosMock = [
-    {
-      id: 1,
-      idnum: "ID-0000",
-      nome: "Ana Beatriz",
-      cargo: "Manicure",
-      status: "Ativo",
-      foto: "https://i.pravatar.cc/150?img=1",
-      pontoentrada: "06/04/2026 08:02",
-      pontosaida: "06/04/2026 17:30",
-      datadeadmissao: "15/01/2022",
-      salario: "R$ 2.500,00",
-      email: "m.silva@empresa.com.br",
-      telefone: "(11) 98765-4321",
-    },
-    {
-      id: 2,
-      idnum: "ID-0001",
-      nome: "Carlos Henrique",
-      cargo: "Barbeiro",
-      status: "Ativo",
-      foto: "https://i.pravatar.cc/150?img=1",
-      pontoentrada: "06/04/2026 09:15",
-      pontosaida: "06/04/2026 18:45",
-      datadeadmissao: "03/03/2024",
-      salario: "R$ 3.100,00",
-      email: "carlos.henrique@tech.com.br",
-      telefone: "(75) 99122-3344"
-    },
-    {
-      id: 3,
-      idnum: "ID-0000",
-      nome: "Juliana Souza",
-      cargo: "Esteticista",
-      status: "Inativo",
-      foto: "https://i.pravatar.cc/150?img=1",
-      pontoentrada: "06/04/2026 07:50",
-      pontosaida: "06/04/2026 17:05",
-      datadeadmissao: "10/11/2020",
-      salario: "R$ 5.850,00",
-      email: "juliana.souza@servicos.net",
-      telefone: "(11) 97744-5566"
-    },
-    {
-      id: 4,
-      idnum: "ID-0000",
-      nome: "Marcos Paulo",
-      cargo: "Cabeleireiro",
-      status: "Ativo",
-      foto: "https://i.pravatar.cc/150?img=1",
-      pontoentrada: "06/04/2026 08:30",
-      pontosaida: "06/04/2026 18:00",
-      datadeadmissao: "22/07/2025",
-      salario: "R$ 2.200,00",
-      email: "beatriz.santos@loja.com",
-      telefone: "(21) 96655-8899"
-    },
-    {
-      id: 5,
-      idnum: "ID-0000",
-      nome: "Fernanda Lima",
-      cargo: "Recepcionista",
-      status: "Ativo",
-      foto: "https://i.pravatar.cc/150?img=1",
-      pontoentrada: "06/04/2026 13:00",
-      pontosaida: "06/04/2026 22:15",
-      datadeadmissao: "05/09/2023",
-      salario: "R$ 7.400,00",
-      email: "f.almeida@consultoria.org",
-      telefone: "(31) 95566-1122"
-    },
-    {
-      id: 6,
-      idnum: "ID-0000",
-      nome: "Lucas Santos",
-      cargo: "Massoterapeuta",
-      status: "Ativo",
-      foto: "https://i.pravatar.cc/150?img=1",
-      pontoentrada: "06/04/2026 08:00",
-      pontosaida: "06/04/2026 12:00",
-      datadeadmissao: "12/02/2019",
-      salario: "R$ 11.200,00",
-      email: "helena.v@diretoria.com.br",
-      telefone: "(41) 94477-9900"
-    },
-  ];
+    const dadosMock = [
+      {
+        id: 1,
+        idnum: "ID-0000",
+        nome: "Ana Beatriz",
+        cargo: "Manicure",
+        status: "Ativo",
+        foto: "https://i.pravatar.cc/150?img=1",
+        pontoentrada: "06/04/2026 08:02",
+        pontosaida: "06/04/2026 17:30",
+        datadeadmissao: "15/01/2022",
+        salario: "R$ 2.500,00",
+        email: "m.silva@empresa.com.br",
+        telefone: "(11) 98765-4321",
+      },
+      {
+        id: 2,
+        idnum: "ID-0001",
+        nome: "Carlos Henrique",
+        cargo: "Barbeiro",
+        status: "Ativo",
+        foto: "https://i.pravatar.cc/150?img=1",
+        pontoentrada: "06/04/2026 09:15",
+        pontosaida: "06/04/2026 18:45",
+        datadeadmissao: "03/03/2024",
+        salario: "R$ 3.100,00",
+        email: "carlos.henrique@tech.com.br",
+        telefone: "(75) 99122-3344"
+      },
+      {
+        id: 3,
+        idnum: "ID-0000",
+        nome: "Juliana Souza",
+        cargo: "Esteticista",
+        status: "Inativo",
+        foto: "https://i.pravatar.cc/150?img=1",
+        pontoentrada: "06/04/2026 07:50",
+        pontosaida: "06/04/2026 17:05",
+        datadeadmissao: "10/11/2020",
+        salario: "R$ 5.850,00",
+        email: "juliana.souza@servicos.net",
+        telefone: "(11) 97744-5566"
+      },
+      {
+        id: 4,
+        idnum: "ID-0000",
+        nome: "Marcos Paulo",
+        cargo: "Cabeleireiro",
+        status: "Ativo",
+        foto: "https://i.pravatar.cc/150?img=1",
+        pontoentrada: "06/04/2026 08:30",
+        pontosaida: "06/04/2026 18:00",
+        datadeadmissao: "22/07/2025",
+        salario: "R$ 2.200,00",
+        email: "beatriz.santos@loja.com",
+        telefone: "(21) 96655-8899"
+      },
+      {
+        id: 5,
+        idnum: "ID-0000",
+        nome: "Fernanda Lima",
+        cargo: "Recepcionista",
+        status: "Ativo",
+        foto: "https://i.pravatar.cc/150?img=1",
+        pontoentrada: "06/04/2026 13:00",
+        pontosaida: "06/04/2026 22:15",
+        datadeadmissao: "05/09/2023",
+        salario: "R$ 7.400,00",
+        email: "f.almeida@consultoria.org",
+        telefone: "(31) 95566-1122"
+      },
+      {
+        id: 6,
+        idnum: "ID-0000",
+        nome: "Lucas Santos",
+        cargo: "Massoterapeuta",
+        status: "Ativo",
+        foto: "https://i.pravatar.cc/150?img=1",
+        pontoentrada: "06/04/2026 08:00",
+        pontosaida: "06/04/2026 12:00",
+        datadeadmissao: "12/02/2019",
+        salario: "R$ 11.200,00",
+        email: "helena.v@diretoria.com.br",
+        telefone: "(41) 94477-9900"
+      },
+    ];
 
-  setColaboradores(dadosMock);
-  setColaboradoresFiltrados(dadosMock);
-  setQuantidade(dadosMock.length);
-}, []);
+    setColaboradores(dadosMock);
+    setColaboradoresFiltrados(dadosMock);
+    setQuantidade(dadosMock.length);
+  }, []);
 
 
   return (
@@ -206,22 +218,20 @@ const Colaboradores = () => {
           <div className="flex gap-2">
             <button
               onClick={() => setViewMode("GRID")}
-              className={`w-10 h-10 flex items-center justify-center rounded ${
-                viewMode === "GRID"
-                  ? "bg-amber-600 text-white"
-                  : "border"
-              }`}
+              className={`w-10 h-10 flex items-center justify-center rounded ${viewMode === "GRID"
+                ? "bg-amber-600 text-white"
+                : "border"
+                }`}
             >
               <i className="bi bi-grid"></i>
             </button>
 
             <button
               onClick={() => setViewMode("LIST")}
-              className={`w-10 h-10 flex items-center justify-center rounded ${
-                viewMode === "LIST"
-                  ? "bg-amber-600 text-white"
-                  : "border"
-              }`}
+              className={`w-10 h-10 flex items-center justify-center rounded ${viewMode === "LIST"
+                ? "bg-amber-600 text-white"
+                : "border"
+                }`}
             >
               <i className="bi bi-list"></i>
             </button>
@@ -229,13 +239,13 @@ const Colaboradores = () => {
 
           <div className='flex gap-2'>
             <div className="flex gap-2 items-center">
-              <input 
-                type="text" placeholder=" Pesquisar..." 
+              <input
+                type="text" placeholder=" Pesquisar..."
                 className="w-64 border p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
               />
               <button
-               onClick={buscarColaborador} 
-               className="p-1 w-8 h-8 items-center font-bold bg-amber-600 rounded-md text-white hover:bg-amber-700 transition-all">
+                onClick={buscarColaborador}
+                className="p-1 w-8 h-8 items-center font-bold bg-amber-600 rounded-md text-white hover:bg-amber-700 transition-all">
                 <i className="bi bi-search"></i>
               </button>
             </div>
@@ -259,19 +269,25 @@ const Colaboradores = () => {
               <div
                 key={colaborador.id}
                 onClick={() => abrirModal(colaborador)}
-                className={`border rounded-md p-4 bg-amber-50 shadow-md cursor-pointer hover:border-gray-400  ${
-                  viewMode === "LIST" ? "flex items-center gap-4" : ""
-                }`}
+                className={`border rounded-md p-4 bg-amber-50 shadow-md cursor-pointer hover:border-gray-400  ${viewMode === "LIST" ? "flex items-center gap-4" : ""
+                  }`}
               >
                 <div className='flex gap-2'>
-                  <img src={colaborador.foto} alt={colaborador.nome} className="w-12 h-12 bg-gray-300 rounded-full" />
-                <div>
-                  <p className="font-semibold text-amber-950">{colaborador.nome}</p>
-                  <p className="text-xs text-gray-600">{colaborador.idnum}</p>
-                  <p className="text-xs text-amber-100 p-2 rounded-md bg-amber-600 shadow-md w-max">
-                    {colaborador.cargo}
-                  </p>
-                </div>
+                  <img
+                    src={`http://localhost:3000/colaboradores/foto/${colaborador.id}`}
+                    alt={colaborador.nome}
+                    className="w-12 h-12 rounded-full object-cover bg-gray-300"
+                    onError={(e) => {
+                      e.target.src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                    }}
+                  />
+                  <div>
+                    <p className="font-semibold text-amber-950">{colaborador.nome}</p>
+                    <p className="text-xs text-gray-600">{colaborador.id}</p>
+                    <p className="text-xs text-amber-100 p-2 rounded-md bg-amber-600 shadow-md w-max">
+                      {colaborador.cargo}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))
@@ -282,24 +298,24 @@ const Colaboradores = () => {
       {/* modal */}
       {modalOpen && colaboradorSelecionado && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          
+
           {/* caixa do modal */}
           <div className="bg-amber-50 rounded-lg p-6 w-[400px] relative text-orange-950 shadow-md">
 
             {/* Título e Botão de Saída */}
-              <div className='flex justify-between mb-2'>
-                <h2 className='font-bold text-xl'>{colaboradorSelecionado.nome}</h2>
-                <button onClick={() => setModalOpen(null)}>
-                  <i className="bi bi-x-circle-fill text-orange-600 text-xl"></i>
-                </button>
-              </div>
+            <div className='flex justify-between mb-2'>
+              <h2 className='font-bold text-xl'>{colaboradorSelecionado.nome}</h2>
+              <button onClick={() => setModalOpen(null)}>
+                <i className="bi bi-x-circle-fill text-orange-600 text-xl"></i>
+              </button>
+            </div>
 
             {/* dados */}
             <div className="flex flex-col gap-2 text-sm ">
               <div className='flex gap-2 justify-between'>
                 <div className='w-full'>
-                  <strong>ID</strong>
-                  <p className='border border-gray-400 p-2 rounded-md mt-0'>{colaboradorSelecionado.idnum}</p>
+                  <strong>CPF</strong>
+                  <p className='border border-gray-400 p-2 rounded-md mt-0'>{colaboradorSelecionado.cpf}</p>
                 </div>
                 <div className='w-full'>
                   <strong>Cargo</strong>
@@ -309,29 +325,28 @@ const Colaboradores = () => {
 
               <div className='flex gap-2 justify-between'>
                 <div className='w-full'>
-                  <strong>Última Entrada</strong>
-                  <p className='border border-gray-400 p-2 rounded-md mt-0'>{colaboradorSelecionado.pontoentrada}</p>
+                  <strong>Vínculo</strong>
+                  <p className='border border-gray-400 p-2 rounded-md mt-0'>{colaboradorSelecionado.vinculo}</p>
                 </div>
                 <div className='w-full'>
-                  <strong>Última Saída</strong>
-                  <p className='border border-gray-400 p-2 rounded-md mt-0'>{colaboradorSelecionado.pontosaida}</p>
+                  <strong>Local de trabalho</strong>
+                  <p className='border border-gray-400 p-2 rounded-md mt-0'>{colaboradorSelecionado.local_trabalho}</p>
                 </div>
               </div>
 
               <div className='flex gap-2 justify-between'>
                 <div className='w-full'>
                   <strong>data de Admissão</strong>
-                  <p className='border border-gray-400 p-2 rounded-md mt-0'>{colaboradorSelecionado.datadeadmissao}</p>
+                  <p className='border border-gray-400 p-2 rounded-md mt-0'>{formatarData(colaboradorSelecionado.data_admissao)}</p>
                 </div>
                 <div className='w-full'>
                   <strong>Status</strong>{" "}
                   <p className='border border-gray-400 p-2 rounded-md'>
                     <span className=
-                      {`font-bold  ${
-                        colaboradorSelecionado.status === "Ativo"
-                          ? "text-green-600"
-                          : "text-red-500"
-                    }`}>
+                      {`font-bold  ${colaboradorSelecionado.status === "ATIVO"
+                        ? "text-green-600"
+                        : "text-red-500"
+                        }`}>
                       {colaboradorSelecionado.status}
                     </span>
                   </p>
@@ -350,7 +365,9 @@ const Colaboradores = () => {
             </div>
             <div className='w-full'>
               <strong className='text-sm'>Salário</strong>
-              <p className='border border-gray-400 p-2 rounded-md mt-0'>{colaboradorSelecionado.salario}</p>
+              <p className='border border-gray-400 p-2 rounded-md mt-0'>
+                {pagamento?.salario_fixo || 'Carregando...'}
+              </p>
             </div>
 
             <div className='justify-items-center'>

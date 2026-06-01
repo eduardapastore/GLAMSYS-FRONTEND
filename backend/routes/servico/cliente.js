@@ -15,12 +15,12 @@ router.get('/', async (req, res) => {
 
 // POST criar um cliente
 router.post('/', async (req, res) => {
-  const { documento,nome_razao, email, telefone } = req.body;
+  const { documento, nome_razao, email, telefone, pontos_fidelidade, data_nascimento, curvatura_cabelo, tipo_pele } = req.body;
 
   try {
     const [result] = await pool.query(
-      'INSERT INTO clientes (documento,nome_razao, email, telefone ) VALUES (?, ?, ?, ?)',
-      [documento,nome_razao, email, telefone ]
+      'INSERT INTO clientes (documento,nome_razao, email, telefone, pontos_fidelidade, data_nascimento, curvatura_cabelo, tipo_pele ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [documento, nome_razao, email, telefone, pontos_fidelidade, data_nascimento, curvatura_cabelo, tipo_pele ]
     );
     res.json({ id: result.insertId });
   } catch (err) {
@@ -28,5 +28,6 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Erro ao criar cliente' });
   }
 });
+
 
 module.exports = router;
