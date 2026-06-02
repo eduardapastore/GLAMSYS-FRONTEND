@@ -340,7 +340,7 @@ const Clientes = () => {
                 <div>
                   <p className='text-xs text-gray-500 uppercase font-bold'>TICKET MÉDIO</p>
                   <p className='text-base text-gray-800 font-bold leading-snug'>
-                    R$ {clienteSelecionado.ticketmedio || "Nenhuma observação registrada."}
+                    R$ {Number(resumoCliente?.ticket_medio || 0).toFixed(2)}
                   </p>
                 </div>
                 <div>

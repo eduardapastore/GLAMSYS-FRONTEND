@@ -42,5 +42,45 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const {
+    descricao,
+    valor,
+    duracao
+  } = req.body;
+
+  try {
+    await pool.query(
+      "UPDATE servico SET descricao = ?, valor = ?, duracao = ? WHERE id = ?",
+      [descricao, valor, duracao, id]
+    );
+
+    res.json({ message: "Serviço atualizado com sucesso" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await pool.query(
+      "DELETE FROM servico WHERE id = ?",
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Servico não encontrado" });
+    }
+
+    res.json({ message: "Servico deletado com sucesso" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 module.exports = router;

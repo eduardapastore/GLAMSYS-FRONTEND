@@ -109,6 +109,13 @@ const Estoque = () => {
       carregarDados();
     } catch (error) { toast.error("Erro ao atualizar!"); }
   };
+  const excluirProduto = async () => {
+    try {
+      await axios.delete(`http://localhost:3000/produtos/${itemEditando.produto_id}`);
+      
+      carregarDados();
+    } catch (error) { toast.error("Erro ao atualizar!"); }
+  };
 
   // --- FILTROS ---
   const listaFormatada = estoques.map((e) => ({
