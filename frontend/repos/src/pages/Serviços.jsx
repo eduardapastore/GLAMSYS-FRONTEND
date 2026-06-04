@@ -94,17 +94,15 @@ const Serviços = () => {
       </section>
 
       {/* MODAL ADICIONAR */}
-      {/* MODAL ADICIONAR */}
       {isModalAddServico && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           {/* Limitamos a altura do container principal aqui com max-h-[90vh] */}
           <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl flex flex-col max-h-[90vh]">
             
             {/* HEADER FIXO */}
-            <div className="p-6 pb-2 flex justify-between items-center border-b border-gray-50">
+            <div className="p-6 pb-2 flex justify-between items-center border-b border-gray-300">
               <div>
-                <h3 className="font-bold text-xl text-gray-800">Novo Serviço</h3>
-                <p className="text-xs text-gray-400">Preencha os detalhes abaixo.</p>
+                <h3 className="font-bold text-xl text-gray-800 uppercase">Novo Serviço</h3>
               </div>
               <button onClick={() => setModalAddServico(false)} className="text-gray-400 hover:text-red-500 transition-colors">
                 <i className="bi bi-x-lg text-lg"></i>
@@ -199,15 +197,8 @@ const Serviços = () => {
             <div className="p-6 border-t border-gray-50 flex gap-2 bg-gray-50 rounded-b-xl">
               <button 
                 type="button" 
-                onClick={() => setModalAddServico(false)}
-                className="flex-1 py-2.5 text-gray-500 font-bold hover:bg-gray-200 rounded-lg transition-all"
-              >
-                Cancelar
-              </button>
-              <button 
-                type="button" 
                 onClick={() => {toast.success("Serviço salvo!"); setModalAddServico(false)}} 
-                className="flex-[2] bg-amber-600 text-white font-bold py-2.5 rounded-lg hover:bg-amber-700 shadow-md transition-all"
+                className="flex-[2] bg-green-600 text-white font-bold py-2.5 rounded-lg hover:bg-amber-700 shadow-md transition-all"
               >
                 Salvar Serviço
               </button>
@@ -220,8 +211,8 @@ const Serviços = () => {
       {isModalEditServico && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-bold text-xl">Editar - {servicoSelecionado?.nome}</h3>
+            <div className="flex justify-between items-center mb-4 border-b border-gray-300 p-3">
+              <h3 className="font-bold text-lg text-gray-800 uppercase">Editar - {servicoSelecionado?.nome}</h3>
               <button onClick={() => setModalEditServico(false)} className="text-gray-400 hover:text-red-500"><i className="bi bi-x-lg"></i></button>
             </div>
             <form className="flex flex-col gap-3">
@@ -231,16 +222,18 @@ const Serviços = () => {
               <div className="flex gap-2">
                 <div className='w-1/2 flex flex-col'>
                   <label className='text-xs font-bold text-gray-400 uppercase mb-2'>Preço</label>
-                  <input type="text" defaultValue={servicoSelecionado?.preco} className="border p-2 rounded-md outline-none" />
+                  <input type="text" defaultValue={servicoSelecionado?.preco} className="border p-2 rounded-md outline-none focus:border-amber-600" />
                 </div>
                 <div className='w-1/2 flex flex-col'>
                   <label className='text-xs font-bold text-gray-400 uppercase mb-2'>Duração</label>
-                  <input type="text" defaultValue={servicoSelecionado?.duracao} className="border p-2 rounded-md outline-none" />
+                  <input type="text" defaultValue={servicoSelecionado?.duracao} className="border p-2 rounded-md outline-none focus:border-amber-600" />
                 </div>
               </div>
 
-              <button type="button" onClick={() => {toast.success("Serviço atualizado!"); setModalEditServico(false)}} className="bg-green-600 text-white font-bold py-2 rounded-md hover:bg-green-700 mt-2">Salvar Alterações</button>
-              <button type="button" className="bg-red-600 p-2 rounded-md text-amber-50 text-base font-semibold hover:bg-red-800">Excluir Serviço</button>
+              <div className="flex w-full gap-4">
+                <button type="button" onClick={() => {toast.success("Serviço atualizado!"); setModalEditServico(false)}} className="bg-green-600 w-full text-white font-bold p-2 rounded-md hover:bg-green-700">Salvar Alterações</button>
+              <button type="button" className="bg-red-600 w-full p-2 rounded-md text-amber-50 font-bold hover:bg-red-800">Excluir Serviço</button>
+              </div>
             </form>
           </div>
         </div>
