@@ -12,7 +12,7 @@ import axios from "axios";
 
 const Financeiro = () => {
   const now = new Date();
-  
+
   const getMonthName = (date) =>
     date.toLocaleString("pt-BR", { month: "short" }).toUpperCase();
 
@@ -44,12 +44,15 @@ const Financeiro = () => {
     { id: 5, descricao: "Reposição de Shampoos", valor: 350.00, tipo_lancamento_id: 2, data_lancamento: "15/04/2026" },
   ]);
 
+  const [meio_pagamento, setMeioPagamento] = useState([]);
+
   // Estados do Formulário
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [valor, setValor] = useState('');
   const [descricao, setDescricao] = useState('');
   const [conta_financeira_id, setContaFinanceiraId] = useState('');
   const [tipo_lancamento_id, setTipoLancamentoId] = useState('');
+  const [meio_pagamento_id, setMeioPagamentoId] = useState('');
 
   // --- CÁLCULOS DO DASHBOARD ---
   const receitasTotais = lancamento
@@ -60,46 +63,134 @@ const Financeiro = () => {
     .filter(l => l.tipo_lancamento_id === 2 || l.tipo_lancamento_id === 3)
     .reduce((acc, l) => acc + Number(l.valor), 0);
 
-  // Mapeia os 6 meses para os gráficos
-  const dadosGraficoReceitas = ultimos6Meses.map((mes, i) => ({
-    name: mes.name,
-    valor: i === 5 ? receitasTotais : receitasTotais * (0.5 + Math.random() * 0.5)
-  }));
 
-  const dadosGraficoDespesas = ultimos6Meses.map((mes, i) => ({
-    name: mes.name,
-    valor: i === 5 ? despesasTotais : despesasTotais * (0.4 + Math.random() * 0.6)
-  }));
+  // cria estrutura dos ultimos 6 meses
+  const mesesBase = Array.from({ length: 6 }, (_, i) => {
+    const data = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
 
-  const salvarLancamentos = () => {
-    if(!descricao || !valor || !tipo_lancamento_id) {
-        return toast.error("Preencha os campos obrigatórios!");
-    }
-    const novo = {
-      id: Math.random(),
-      descricao,
-      valor: parseFloat(valor.replace(',', '.')),
-      tipo_lancamento_id: parseInt(tipo_lancamento_id),
-      data_lancamento: new Date().toLocaleDateString('pt-BR'),
+    return {
+      mes: data.getMonth(),
+      ano: data.getFullYear(),
+      name: getMonthName(data),
+      receitas: 0,
+      despesas: 0,
     };
-    setLancamento([novo, ...lancamento]);
-    toast.success("Lançamento salvo com sucesso!");
-    setIsModalOpen(false);
-    setDescricao(""); setValor("");
+  });
+
+  // percorre lancamentos
+  lancamento.forEach((item) => {
+    const data = new Date(item.data_lancamento || item.created_at);
+
+    const mes = data.getMonth();
+    const ano = data.getFullYear();
+
+    const mesEncontrado = mesesBase.find(
+      (m) => m.mes === mes && m.ano === ano
+    );
+
+    if (mesEncontrado) {
+      const valor = Number(item.valor);
+
+      // RECEITA
+      if (Number(item.tipo_lancamento_id) === 1) {
+        mesEncontrado.receitas += valor;
+      }
+
+      // DESPESA
+      if (
+        Number(item.tipo_lancamento_id) === 2 ||
+        Number(item.tipo_lancamento_id) === 3
+      ) {
+        mesEncontrado.despesas += valor;
+      }
+    }
+  });
+
+  // exibe no grafico
+  const dadosGraficoReceitas = mesesBase.map((m) => ({
+    name: m.name,
+    valor: m.receitas,
+  }));
+
+  const dadosGraficoDespesas = mesesBase.map((m) => ({
+    name: m.name,
+    valor: m.despesas,
+  }));
+
+  const salvarLancamentos = async () => {
+    if (!descricao || !valor || !tipo_lancamento_id || !conta_financeira_id) {
+      return toast.error("Preencha os campos obrigatórios!");
+    }
+
+    try {
+      await axios.post('http://localhost:3000/lancamentos', {
+        descricao,
+        valor: parseFloat(valor.replace(',', '.')),
+        tipo_lancamento_id,
+        conta_financeira_id,
+        meio_pagamento_id: meio_pagamento_id || null
+      });
+
+      toast.success("Lançamento salvo com sucesso!");
+
+      setDescricao('');
+      setValor('');
+      setTipoLancamentoId('');
+      setContaFinanceiraId('');
+      setMeioPagamentoId('');
+
+      setIsModalOpen(false);
+
+      carregarLancamentos();
+
+    } catch (err) {
+      console.error(err);
+      toast.error('Erro ao salvar lançamento');
+    }
   };
+
+  useEffect(() => {
+    carregarLancamentos();
+  }, []);
+
+  const carregarLancamentos = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/lancamentos');
+
+      setLancamento(response.data);
+    } catch (err) {
+      console.error(err);
+      toast.error('Erro ao carregar lançamentos');
+    }
+  };
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/contas_financeiras')
+      .then(response => {
+        setContasFinanceiras(response.data);
+      })
+      .catch(() => toast.error('Erro ao carregar contas'));
+  }, []);
+  useEffect(() => {
+    axios.get('http://localhost:3000/meios_pagamento')
+      .then(response => {
+        setMeioPagamento(response.data);
+      })
+      .catch(() => toast.error('Erro ao carregar meio de pagamento'));
+  }, []);
 
   return (
     <main className='w-screen flex h-screen overflow-x-hidden bg-transparent'>
       <Navbar />
       <Toaster position="top-center" />
-      
+
       <section className='p-6 w-full h-full flex flex-col'>
         <header className='flex justify-between items-center mb-6'>
           <div>
             <h2 className='font-bold text-3xl text-gray-800 tracking-tight'>Financeiro</h2>
             <p className='text-gray-500 text-sm'>Gestão de fluxo de caixa (6 meses)</p>
           </div>
-          <button 
+          <button
             className='flex items-center gap-2 px-4 py-2 rounded-lg font-bold bg-amber-600 text-white hover:bg-amber-700 shadow-md transition-all'
             onClick={() => setIsModalOpen(true)}
           >
@@ -117,7 +208,7 @@ const Financeiro = () => {
               {contas_financeiras.map((c) => (
                 <div key={c.id} className="flex justify-between items-center p-3 bg-transparent rounded-xl border shadow-md border-amber-700">
                   <span className='text-gray-600 font-medium text-sm'>{c.nome}</span>
-                  <span className="font-bold text-amber-900">R$ {Number(c.saldo_atual).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                  <span className="font-bold text-amber-900">R$ {Number(c.saldo_atual).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                 </div>
               ))}
             </div>
@@ -131,7 +222,7 @@ const Financeiro = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={dadosGraficoReceitas}>
                     <XAxis dataKey="name" hide />
-                    <RechartsTooltip cursor={{fill: '#f0fdf4'}} contentStyle={{borderRadius: '12px', border: 'none'}} />
+                    <RechartsTooltip cursor={{ fill: '#f0fdf4' }} contentStyle={{ borderRadius: '12px', border: 'none' }} />
                     <Bar dataKey="valor" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -144,7 +235,7 @@ const Financeiro = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={dadosGraficoDespesas}>
                     <XAxis dataKey="name" hide />
-                    <RechartsTooltip cursor={{fill: '#fef2f2'}} contentStyle={{borderRadius: '12px', border: 'none'}} />
+                    <RechartsTooltip cursor={{ fill: '#fef2f2' }} contentStyle={{ borderRadius: '12px', border: 'none' }} />
                     <Bar dataKey="valor" fill="#ef4444" opacity={0.8} radius={[4, 4, 0, 0]} barSize={20} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -167,7 +258,9 @@ const Financeiro = () => {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-gray-800">{item.descricao}</p>
-                      <p className="text-[10px] text-gray-400 uppercase">{item.data_lancamento}</p>
+                      <p className="text-[10px] text-gray-400 uppercase">
+                        {new Date(item.data_lancamento || item.created_at).toLocaleDateString('pt-BR')}
+                      </p>
                     </div>
                   </div>
                   <p className={`text-sm font-black ${isReceita ? 'text-green-600' : 'text-red-600'}`}>
@@ -191,7 +284,7 @@ const Financeiro = () => {
             <div className=''>
               {/* TÍTULO DO LANÇAMENTO */}
               <label className='block text-xs font-bold text-gray-600 mb-1 uppercase'>título do lançamento</label>
-              <input type="text" placeholder="Descrição" value={descricao} onChange={e => setDescricao(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none mb-3"  />
+              <input type="text" placeholder="Descrição" value={descricao} onChange={e => setDescricao(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none mb-3" />
 
               {/* VALOR DO LANÇAMENTO */}
               <label className="className='block text-xs font-bold text-gray-600 mb-1 uppercase">valor do lançamento</label>
@@ -208,9 +301,16 @@ const Financeiro = () => {
                 </div>
                 <div>
                   <label className="className='block text-xs font-bold text-gray-600 mb-1 uppercase">Conta relacionada</label>
-                  <select value={tipo_lancamento_id} onChange={e => setTipoLancamentoId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none">
+                  <select value={conta_financeira_id} onChange={e => setContaFinanceiraId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none">
                     <option value="">Conta Relacionada</option>
-                    {tipo_lancamento.map(t => <option key={t.id} value={t.id}>{t.desc}</option>)}
+                    {contas_financeiras.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="className='block text-xs font-bold text-gray-600 mb-1 uppercase">Meio de pagamento</label>
+                  <select value={meio_pagamento_id} onChange={e => setMeioPagamentoId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none">
+                    <option value="">Meio de pagamento</option>
+                    {meio_pagamento.map(m => <option key={m.id} value={m.id}>{m.tipo}</option>)}
                   </select>
                 </div>
               </div>

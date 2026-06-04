@@ -244,28 +244,57 @@ const AddColaborador = () => {
         return Object.values(mapa);
     };
 
-    const salvarColaborador = () => {
-        axios.post('http://localhost:3000/colaboradores', {
-            nome,
-            cpf,
-            email,
-            telefone,
-            cargo,
-            data_admissao: dataEntrada,
-            vinculo: tipoVinculo,
-            local_trabalho: localTrabalho
-        })
-            .then((resposta) => {
-                console.log('Resposta da API:', resposta.data.id);
-                const id = resposta.data.id;
-                setColaboradorId(id);
-                proximaAba();
-                toast.success('Colaborador salvo!');
-            })
-            .catch((error) => {
-                console.error('Erro ao salvar colaborador:', error); // Adicionado para verificar erros
-                toast.error('Erro ao salvar colaborador');
-            });
+    const salvarColaborador = async () => {
+
+        try {
+    
+            const formData = new FormData();
+    
+            formData.append('nome', nome);
+            formData.append('cpf', cpf);
+            formData.append('email', email);
+            formData.append('telefone', telefone);
+            formData.append('cargo', cargo);
+            formData.append('data_admissao', dataEntrada);
+            formData.append('vinculo', tipoVinculo);
+            formData.append('local_trabalho', localTrabalho);
+    
+            // status opcional
+            formData.append('status', 'ATIVO');
+    
+            // foto
+            if (foto) {
+                formData.append('foto', foto);
+            }
+    
+            const resposta = await axios.post(
+                'http://localhost:3000/colaboradores',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+    
+            console.log('Resposta da API:', resposta.data.id);
+    
+            const id = resposta.data.id;
+    
+            setColaboradorId(id);
+    
+            toast.success('Colaborador salvo!');
+    
+            proximaAba();
+    
+        } catch (error) {
+    
+            console.error('Erro ao salvar colaborador:', error);
+    
+            toast.error('Erro ao salvar colaborador');
+    
+        }
+    
     };
 
     // Salvar pagamento do colaborador

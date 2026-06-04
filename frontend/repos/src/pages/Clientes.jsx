@@ -1,16 +1,16 @@
-import React from 'react'
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Toaster } from 'react-hot-toast'
 import Navbar from '../../components/Navbar';
-import { use } from 'react';
+
 
 const Clientes = () => {
 
   // DUMMY DATA
   const dummyClientes = [
-    { id: 1, nome: "Fulano de Tal", email: "fulano@email.com", proximoagendamento: "15/09", aniversario: "2000-05-20", telefone: "75999036694", status_fidelidade: "VIP", ticketmedio: 60.00, ultimoservico: "Corte de Cabelo", dataultimoservico: "10/09", observacoes: "Cliente frequente.", precaucoes: "Alergia a amônia.", curvatura: "1", cordofio: "Preto", tipodepele: "seca", tomdepele: "Claro" },
-    { id: 2, nome: "Jojo Todynho", email: "jojo@email.com", proximoagendamento: "20/09", aniversario: "1997-08-15", telefone: "75988888888", status_fidelidade: "CLIENTE NOVO", ticketmedio: 35.00, ultimoservico: "Pintura de Unhas", dataultimoservico: "05/09", observacoes: "Interessada em tratamentos.", precaucoes: "Nenhuma.", curvatura: "4", cordofio: "Castanho", tipodepele: "oleosa", tomdepele: "Escuro" },
-    { id: 3, nome: "Carla Silva", email: "maria@email.com", proximoagendamento: "25/09", aniversario: "1995-12-10", telefone: "75977777777", status_fidelidade: "EM RISCO", ticketmedio: 45.00, ultimoservico: "Massagem", dataultimoservico: "01/09", observacoes: "Cliente fiel.", precaucoes: "Nenhuma.", curvatura: "2", cordofio: "Loiro", tipodepele: "normal", tomdepele: "Claro" },
+    { id: 1, nome: "Fulano de Tal", email: "fulano@email.com", proximoagendamento: "15/09", aniversario: "2000-05-20", telefone: "75999036694", pontos_fidelidade: 1, ticketmedio: 60.00, ultimoservico: "Corte de Cabelo", dataultimoservico: "10/09", observacoes: "Cliente frequente.", precaucoes: "Alergia a amônia.", curvatura: "1", cordofio: "Preto", tipodepele: "seca", tomdepele: "Claro" },
+    { id: 2, nome: "Jojo Todynho", email: "jojo@email.com", proximoagendamento: "20/09", aniversario: "1997-08-15", telefone: "75988888888", pontos_fidelidade: 4, ticketmedio: 35.00, ultimoservico: "Pintura de Unhas", dataultimoservico: "05/09", observacoes: "Interessada em tratamentos.", precaucoes: "Nenhuma.", curvatura: "4", cordofio: "Castanho", tipodepele: "oleosa", tomdepele: "Escuro" },
+    { id: 3, nome: "Carla Silva", email: "maria@email.com", proximoagendamento: "25/09", aniversario: "1995-12-10", telefone: "75977777777", pontos_fidelidade: 5, ticketmedio: 45.00, ultimoservico: "Massagem", dataultimoservico: "01/09", observacoes: "Cliente fiel.", precaucoes: "Nenhuma.", curvatura: "2", cordofio: "Loiro", tipodepele: "normal", tomdepele: "Claro" },
   ];
 
   // MODAL CLIENTES
@@ -44,15 +44,15 @@ const Clientes = () => {
   };
 
   const salvarEdicao = async () => {
-    const dadosAtualizados = { 
-      nome: editNome, 
-      email: editEmail, 
-      aniversario: editAniversario, 
-      telefone: editTelefone, 
-      curvatura: editCurvatura, 
-      cordofio: editCordofio, 
-      tipodepele: editTipodepele, 
-      tomdepele: editTomdepele 
+    const dadosAtualizados = {
+      nome: editNome,
+      email: editEmail,
+      aniversario: editAniversario,
+      telefone: editTelefone,
+      curvatura: editCurvatura,
+      cordofio: editCordofio,
+      tipodepele: editTipodepele,
+      tomdepele: editTomdepele
     };
 
     try {
@@ -61,8 +61,8 @@ const Clientes = () => {
       toast.success("Cliente atualizado com sucesso!");
       setisModalEditCliente(false);
       // carregarDados(); // Sua função de refresh
-    } catch (error) { 
-      toast.error("Erro ao atualizar!"); 
+    } catch (error) {
+      toast.error("Erro ao atualizar!");
     }
   };
 
@@ -71,40 +71,75 @@ const Clientes = () => {
 
   // ESTILOS
   const statusStyles = {
-  "VIP": "bg-purple-100 text-purple-700 border-purple-200 shadow-sm font-black",
-  "EM RISCO": "bg-orange-100 text-orange-700 animate-pulse",
-  "FIDELIDADE ATIVA": "bg-green-100 text-green-700 border-green-200",
-  "CLIENTE NOVO": "bg-amber-100 text-amber-700 border-amber-200",
-};
+    "VIP": "bg-purple-100 text-purple-700 border-purple-200 shadow-sm font-black",
+    "EM RISCO": "bg-orange-100 text-orange-700 animate-pulse",
+    "FIDELIDADE ATIVA": "bg-green-100 text-green-700 border-green-200",
+    "CLIENTE NOVO": "bg-amber-100 text-amber-700 border-amber-200",
+  };
 
-// MENSAGENS PARA WHATSAPP
-// MENSAGENS PARA WHATSAPP - Use CRASES (tecla ao lado da letra P no teclado ABNT)
-const MENSAGENS_STATUS = {
-  "VIP": (nome) => `Olá, ${nome}! Passando para agradecer por ser uma de nossas clientes mais especiais. 🌟 Preparamos um mimo exclusivo para sua próxima visita. Vamos agendar seu horário?`,
-  
-  "EM RISCO": (nome) => `Oi, ${nome}! Sentimos sua falta! 💔 Faz um tempinho que não cuidamos de você! Que tal um desconto de 15% para renovarmos seu visual esta semana?`,
-  
-  "FIDELIDADE ATIVA": (nome) => `Olá, ${nome}! Você está pontuando muito bem no nosso programa de fidelidade! Falta apenas mais uma visita para você ganhar seu brinde. Vamos completar? 🎁`,
-  
-  "CLIENTE NOVO": (nome) => `Seja bem-vinda(o), ${nome}! Ficamos muito felizes com sua primeira visita. 🌸 Como foi sua experiência? Adoraríamos receber seu feedback!`,
-  
-  "DEFAULT": (nome) => `Olá, ${nome}! Como você está? Passando para desejar um ótimo dia!`
-};
-const dispararWhatsApp = (cliente) => {
-  // 1. Seleciona a mensagem baseada no status
-  const template = MENSAGENS_STATUS[cliente.status_fidelidade] || MENSAGENS_STATUS["DEFAULT"];
-  const mensagemTexto = template(cliente.nome);
+  // MENSAGENS PARA WHATSAPP
+  // MENSAGENS PARA WHATSAPP - Use CRASES (tecla ao lado da letra P no teclado ABNT)
+  const MENSAGENS_STATUS = {
+    "VIP": (nome) => `Olá, ${nome}! Passando para agradecer por ser uma de nossas clientes mais especiais. 🌟 Preparamos um mimo exclusivo para sua próxima visita. Vamos agendar seu horário?`,
 
-  // 2. Limpa o telefone (deixa só números)
-  // Se o número vier como "71999999999", ele apenas garante que não haja espaços ou parênteses
-  const telefoneLimpo = cliente.telefone.replace(/\D/g, '');
+    "EM RISCO": (nome) => `Oi, ${nome}! Sentimos sua falta! 💔 Faz um tempinho que não cuidamos de você! Que tal um desconto de 15% para renovarmos seu visual esta semana?`,
 
-  // 3. Montagem pra a URL
-  const url = `https://wa.me/55${telefoneLimpo}?text=${encodeURIComponent(mensagemTexto)}`;
+    "FIDELIDADE ATIVA": (nome) => `Olá, ${nome}! Você está pontuando muito bem no nosso programa de fidelidade! Falta apenas mais uma visita para você ganhar seu brinde. Vamos completar? 🎁`,
 
-  // 4. Abre em numa aba nova
-  window.open(url, '_blank');
-};
+    "CLIENTE NOVO": (nome) => `Seja bem-vinda(o), ${nome}! Ficamos muito felizes com sua primeira visita. 🌸 Como foi sua experiência? Adoraríamos receber seu feedback!`,
+
+    "DEFAULT": (nome) => `Olá, ${nome}! Como você está? Passando para desejar um ótimo dia!`
+  };
+  const dispararWhatsApp = (cliente) => {
+    // 1. Seleciona a mensagem baseada no status
+    const template = MENSAGENS_STATUS[cliente.status_fidelidade] || MENSAGENS_STATUS["DEFAULT"];
+    const mensagemTexto = template(cliente.nome);
+
+    // 2. Limpa o telefone (deixa só números)
+    // Se o número vier como "71999999999", ele apenas garante que não haja espaços ou parênteses
+    const telefoneLimpo = cliente.telefone.replace(/\D/g, '');
+
+    // 3. Montagem pra a URL
+    const url = `https://wa.me/55${telefoneLimpo}?text=${encodeURIComponent(mensagemTexto)}`;
+
+    // 4. Abre em numa aba nova
+    window.open(url, '_blank');
+  };
+
+  const [clientes, setClientes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const carregarClientes = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/cliente');
+
+      setClientes(response.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    carregarClientes();
+  }, []);
+
+  const [resumoCliente, setResumoCliente] = useState(null);
+
+  const buscarResumoCliente = async (clienteId) => {
+    try {
+
+      const response = await axios.get(
+        `http://localhost:3000/agendamentos/cliente/${clienteId}/resumo`
+      );
+
+      setResumoCliente(response.data);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <main className="w-screen flex h-screen overflow-x-hidden">
@@ -113,115 +148,118 @@ const dispararWhatsApp = (cliente) => {
 
       {/* CONTEÚDO */}
       <div className='p-6 w-screen h-full overflow-y-auto'>
-          <div className='flex justify-between mb-3'>
-            <h1 className='font-bold text-2xl text-gray-900' >Clientes</h1>
-            <div className='flex gap-2'>
-              <button className='p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50'>
-                <i className="bi bi-clipboard2-data"></i>
-                Relatório
-              </button>
-              <button onClick={() => setisModalAddCliente(true)}
-                className='flex gap-2 p-2 font-bold text-xl items-center rounded-md align-middle bg-amber-600 text-gray-50 hover:bg-amber-700 shadow-md'>
-                <i className="bi bi-plus-circle text-xs"></i>
-                <span className='text-sm'>Adicionar Cliente</span>
-              </button>
+        <div className='flex justify-between mb-3'>
+          <h1 className='font-bold text-2xl text-gray-900' >Clientes</h1>
+          <div className='flex gap-2'>
+            <button className='p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50'>
+              <i className="bi bi-clipboard2-data"></i>
+              Relatório
+            </button>
+            <button onClick={() => setisModalAddCliente(true)}
+              className='flex gap-2 p-2 font-bold text-xl items-center rounded-md align-middle bg-amber-600 text-gray-50 hover:bg-amber-700 shadow-md'>
+              <i className="bi bi-plus-circle text-xs"></i>
+              <span className='text-sm'>Adicionar Cliente</span>
+            </button>
+          </div>
+        </div>
+
+        {/* DASH DE CLIENTES */}
+        <div className='flex justify-between gap-4 font-semibold text-amber-50'>
+          <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
+            <i class="bi bi-people text-3xl"></i>
+            <div>
+              <p className='font-semibold'>Total de Clientes</p>
+              <p className='text-lg'>10</p>
             </div>
           </div>
 
-          {/* DASH DE CLIENTES */}
-          <div className='flex justify-between gap-4 font-semibold text-amber-50'>
-            <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
-                <i class="bi bi-people text-3xl"></i>
-                <div>
-                  <p className='font-semibold'>Total de Clientes</p>
-                  <p className='text-lg'>10</p>
-                </div>
-            </div>
-
-            <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
-                <i className="bi bi-person-add text-3xl"></i>
-                <div>
-                  <p className='font-semibold'>Clientes Novos no Mês</p>
-                  <p className='text-lg'>10</p>
-                </div>
-            </div>
-
-            <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
-                <i class="bi bi-cake2 text-3xl"></i>
-                <div>
-                  <p className='font-semibold'>Aniversariantes do Dia</p>
-                  <p className='text-lg'>9</p>
-                </div>
-            </div>
-
-            <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
-                <i class="bi bi-bag-heart text-3xl"></i>
-                <div>
-                  <p className='font-semibold'>Serviço Mais Contratado</p>
-                  <p className='text-base font-light'>Tratamento de Hidratação</p>
-                </div>
+          <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
+            <i className="bi bi-person-add text-3xl"></i>
+            <div>
+              <p className='font-semibold'>Clientes Novos no Mês</p>
+              <p className='text-lg'>10</p>
             </div>
           </div>
 
-          {/* LISTA DE CLIENTES */}
-          <div className='flex justify-between align-middle mt-6'>
-            <h2 className="text-gray-500 font-semibold mb-2 uppercase mt-4">Listagem de Clientes</h2>
-            <div className="flex gap-2 items-center">
-              <input 
-                type="text" placeholder=" Pesquisar..." 
-                className="w-64 border p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
-              />
-              <button className="p-1 w-8 h-8 items-center font-bold bg-amber-600 rounded-md text-white hover:bg-amber-700 transition-all">
-                <i className="bi bi-search"></i>
-              </button>
+          <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
+            <i class="bi bi-cake2 text-3xl"></i>
+            <div>
+              <p className='font-semibold'>Aniversariantes do Dia</p>
+              <p className='text-lg'>9</p>
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-            {dummyClientes.length > 0 ? (
-              dummyClientes.map(c => (
-                <button>
-                    <div key={c.id} className="p-4 flex justify-between items-center bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                    <button
-                          onClick={() => {
-                        setClienteSelecionado(c);
-                        setisModalClientes(true);
-                      }}
-                          >
-                      <div className="flex items-center gap-4">
-                        {/* Avatar gerado por iniciais */}
-                        <div className="w-10 h-10 bg-amber-100 text-amber-700 flex items-center justify-center rounded-full font-bold">
-                          {c.nome.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="font-bold text-gray-800 leading-none">{c.nome}</p>
-                          <p className="text-xs text-gray-400 mt-1">{c.descricao}</p>
-                        </div>
+
+          <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
+            <i class="bi bi-bag-heart text-3xl"></i>
+            <div>
+              <p className='font-semibold'>Serviço Mais Contratado</p>
+              <p className='text-base font-light'>Tratamento de Hidratação</p>
+            </div>
+          </div>
+        </div>
+
+        {/* LISTA DE CLIENTES */}
+        <div className='flex justify-between align-middle mt-6'>
+          <h2 className="text-gray-500 font-semibold mb-2 uppercase mt-4">Listagem de Clientes</h2>
+          <div className="flex gap-2 items-center">
+            <input
+              type="text" placeholder=" Pesquisar..."
+              className="w-64 border p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
+            />
+            <button className="p-1 w-8 h-8 items-center font-bold bg-amber-600 rounded-md text-white hover:bg-amber-700 transition-all">
+              <i className="bi bi-search"></i>
+            </button>
+          </div>
+        </div>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+          {clientes.length > 0 ? (
+            clientes.map(c => (
+              <button>
+                <div key={c.id} className="p-4 flex justify-between items-center bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                  <button
+                    onClick={async () => {
+                      setClienteSelecionado(c);
+
+                      await buscarResumoCliente(c.id);
+
+                      setisModalClientes(true);
+                    }}
+                  >
+                    <div className="flex items-center gap-4">
+                      {/* Avatar gerado por iniciais */}
+                      <div className="w-10 h-10 bg-amber-100 text-amber-700 flex items-center justify-center rounded-full font-bold">
+                        {c.nome_razao.charAt(0)}
                       </div>
-                    </button>
-                    
-                    <div className="text-right flex gap-6 items-center">
-                      <div className='flex gap-2'>
-                        <button 
+                      <div>
+                        <p className="font-bold text-gray-800 leading-none">{c.nome_razao}</p>
+                        <p className="text-xs text-gray-400 mt-1">{c.descricao}</p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <div className="text-right flex gap-6 items-center">
+                    <div className='flex gap-2'>
+                      <button
                         onClick={() => abrirModalEdicao(c)}
                         className="hover:scale-110 transition-transform">
-                          <i className="bi bi-pencil-square text-xl text-amber-600"></i>
-                        </button >
-                        <button
+                        <i className="bi bi-pencil-square text-xl text-amber-600"></i>
+                      </button >
+                      <button
                         onClick={(e) => {
                           dispararWhatsApp(c);
                         }}
                         className="hover:scale-110 transition-transform">
-                          <i className="bi bi-whatsapp text-xl text-green-500"></i>
-                        </button>
-                      </div>
+                        <i className="bi bi-whatsapp text-xl text-green-500"></i>
+                      </button>
                     </div>
+                  </div>
                 </div>
-                </button>
-              ))
-            ) : (
-              <p className="text-gray-400 italic">Nenhum cliente encontrado.</p>
-            )}
-          </div>
+              </button>
+            ))
+          ) : (
+            <p className="text-gray-400 italic">Nenhum cliente encontrado.</p>
+          )}
+        </div>
       </div>
 
       {/* --- MODAIS --- */}
@@ -229,33 +267,36 @@ const dispararWhatsApp = (cliente) => {
         <div className="fixed inset-0 text-center bg-black bg-opacity-50 flex items-center justify-center p-2 z-50">
           {/* HEADER */}
           <div className='w-1/2 rounded-md shadow-lg bg-amber-50 justify-between p-6 border-b text-start'>
-           <div className='flex justify-between mb-4'>
-             <h2 className='font-bold text-gray-800 text-lg'>Dados do Cliente</h2>
+            <div className='flex justify-between mb-4'>
+              <h2 className='font-bold text-gray-800 text-lg'>Dados do Cliente</h2>
               <button onClick={() => {
                 setisModalClientes(false);
                 setClienteSelecionado(null);
               }} className="text-gray-400 hover:text-red-500"><i className="bi bi-x-lg"></i></button>
-           </div>
+            </div>
 
             {/* CONTEÚDO DO MODAL */}
             <div className='p-6 space-y-4'>
               {/* HEADER DO CLIENTE */}
               <div className='flex justify-between gap-8 w-full'>
                 <div className="w-16 h-16 shrink-0 bg-amber-200 text-amber-800 flex items-center justify-center rounded-full font-bold text-3xl shadow-md">
-                  {clienteSelecionado.nome.charAt(0)}
+                  {clienteSelecionado.nome_razao.charAt(0)}
                 </div>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 w-full'>  
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 w-full'>
                   <div className="flex flex-col justify-center">
                     <p className='text-[10px] text-amber-600 uppercase font-black tracking-widest mb-1'>Nome Completo</p>
                     <p className='text-lg font-bold text-gray-900 leading-tight'>
-                      {clienteSelecionado.nome}
+                      {clienteSelecionado.nome_razao}
                     </p>
                   </div>
 
                   <div className="flex flex-col justify-center">
                     <p className='text-[10px] text-gray-900 uppercase font-black tracking-widest mb-1'>PRÓXIMO AGENDAMENTO</p>
                     <p className='text-base text-gray-700 font-bold leading-snug'>
-                      {clienteSelecionado.proximoagendamento || "Sem agendamento futuro."}
+                      {resumoCliente?.proximoAgendamento
+                        ? `${resumoCliente.proximoAgendamento.data} às ${resumoCliente.proximoAgendamento.hora} - ${resumoCliente.proximoAgendamento.servico}`
+                        : "Sem agendamento futuro."
+                      }
                     </p>
                   </div>
                 </div>
@@ -265,138 +306,160 @@ const dispararWhatsApp = (cliente) => {
                 <div>
                   <p className='text-xs text-gray-500 uppercase font-bold'>ANIVERSÁRIO</p>
                   <p className='text-base text-gray-800 font-bold leading-snug'>
-                      {clienteSelecionado.aniversario || "Nenhuma observação registrada."}
+                    {
+                      clienteSelecionado?.data_nascimento
+                        ? new Date(clienteSelecionado.data_nascimento).toLocaleDateString('pt-BR')
+                        : "Nenhuma observação registrada."
+                    }
                   </p>
                 </div>
                 <div>
-                  <p className='text-xs text-gray-500 uppercase font-bold'>STATUS</p>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold border ${statusStyles[clienteSelecionado.status_fidelidade] || "bg-gray-100 text-gray-800"}`}>
-                    {clienteSelecionado.status_fidelidade}
-                  </span>
+                  <p className='text-xs text-gray-500 uppercase font-bold mb-2'>
+                    FIDELIDADE
+                  </p>
+
+                  <div className='flex items-center gap-2'>
+                    {[1, 2, 3, 4, 5, 6].map((ponto) => (
+                      <div
+                        key={ponto}
+                        className={`
+          w-5 h-5 rounded-full border-2 transition-all
+          ${ponto <= clienteSelecionado.pontos_fidelidade
+                            ? 'bg-amber-500 border-amber-500'
+                            : 'border-gray-300 bg-white'
+                          }
+        `}
+                      />
+                    ))}
+                  </div>
+
+                  <p className='text-xs text-gray-400 mt-2'>
+                    {clienteSelecionado.pontos_fidelidade || 0}/6 pontos
+                  </p>
                 </div>
                 <div>
                   <p className='text-xs text-gray-500 uppercase font-bold'>TICKET MÉDIO</p>
                   <p className='text-base text-gray-800 font-bold leading-snug'>
-                      R$ {clienteSelecionado.ticketmedio || "Nenhuma observação registrada."}
+                    R$ {clienteSelecionado.ticketmedio || "Nenhuma observação registrada."}
                   </p>
                 </div>
                 <div>
                   <p className='text-xs text-gray-500 uppercase font-bold'>ÚLTIMO SERVIÇO</p>
                   <p className='text-base text-gray-800 font-bold leading-snug'>
-                      {clienteSelecionado.ultimoservico || "Nenhuma observação registrada."}
+                    {resumoCliente?.ultimoServico?.servico || "Nenhum serviço encontrado."}
                   </p>
                 </div>
                 <div>
                   <p className='text-xs text-gray-500 uppercase font-bold'>DATA DO ÚLTIMO SERVIÇO</p>
                   <p className='text-base text-gray-800 font-bold leading-snug'>
-                      {clienteSelecionado.dataultimoservico || "Nenhuma observação registrada."}
+                    {resumoCliente?.ultimoServico?.data || "Nenhuma data encontrada."}
                   </p>
                 </div>
                 <div>
                   <p className='text-xs text-gray-500 uppercase font-bold'>PRECAUÇÕES</p>
                   <p className='text-base text-gray-800 font-bold leading-snug'>
-                      {clienteSelecionado.precaucoes || "Nenhuma observação registrada."}
+                    {clienteSelecionado.observacoes || "Nenhuma observação registrada."}
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          
+
         </div>
       )}
 
       {/* MODAL DE ADIÇÃO DE CLIENTE */}
       {isModalAddCliente && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className='w-full max-w-2xl max-h-[90vh] rounded-md shadow-lg bg-amber-50 flex flex-col p-0 border-b text-start overflow-hidden'>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className='w-full max-w-2xl max-h-[90vh] rounded-md shadow-lg bg-amber-50 flex flex-col p-0 border-b text-start overflow-hidden'>
 
-          {/* HEADER */}
-          <div className='flex justify-between p-6 mb-0'>
-            <h2 className='font-bold text-gray-800 text-lg'>Adicionar Novo Cliente</h2>
-            <button onClick={() => setisModalAddCliente(false)} className="text-gray-400 hover:text-red-500">
-              <i className="bi bi-x-lg"></i>
-            </button>
-          </div>
-
-          {/* CONTEÚDO */}
-          <div className="flex-1 overflow-y-auto p-8 mt-0 flex flex-col gap-4">
-            <div className='mb-0'>
-              <label className="text-[10px] font-bold text-gray-500 uppercase">NOME</label>
-              <input className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+            {/* HEADER */}
+            <div className='flex justify-between p-6 mb-0'>
+              <h2 className='font-bold text-gray-800 text-lg'>Adicionar Novo Cliente</h2>
+              <button onClick={() => setisModalAddCliente(false)} className="text-gray-400 hover:text-red-500">
+                <i className="bi bi-x-lg"></i>
+              </button>
             </div>
 
-            <div className='flex flex-col md:flex-row gap-3'>
-              <div className='w-full'>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">EMAIL</label>
+            {/* CONTEÚDO */}
+            <div className="flex-1 overflow-y-auto p-8 mt-0 flex flex-col gap-4">
+              <div className='mb-0'>
+                <label className="text-[10px] font-bold text-gray-500 uppercase">NOME</label>
                 <input className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
               </div>
-              <div className='w-full'>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">DATA DE NASCIMENTO</label>
-                <input type='date' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+
+              <div className='flex flex-col md:flex-row gap-3'>
+                <div className='w-full'>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">EMAIL</label>
+                  <input className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                </div>
+                <div className='w-full'>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">DATA DE NASCIMENTO</label>
+                  <input type='date' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                </div>
+              </div>
+
+              <div className='flex flex-col md:flex-row gap-3'>
+                <div className='w-full'>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">TELEFONE</label>
+                  <input className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                </div>
+                <div className='w-full'>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">CPF</label>
+                  <input type='text' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                </div>
+              </div>
+
+              <div className='flex flex-col md:flex-row gap-3'>
+                <div className='w-full'>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">CURVATURA DO FIO</label>
+                  <select className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" >
+                    <option value="">Selecione</option>
+                    <option value="1">1A, 1B, 1C</option>
+                    <option value="2">2A, 2B, 2C</option>
+                    <option value="3">3A, 3B, 3C</option>
+                    <option value="4">4A, 4B, 4C</option>
+                  </select>
+                </div>
+                <div className='w-full'>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">COR DO FIO (ATUALMENTE)</label>
+                  <input type='text' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                </div>
+              </div>
+
+              <div className='flex flex-col md:flex-row gap-3'>
+                <div className='w-full'>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">TIPO DE PELE</label>
+                  <select className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" >
+                    <option value="">Selecione</option>
+                    <option value="seca">Seca</option>
+                    <option value="mista">Mista</option>
+                    <option value="oleosa">Oleosa</option>
+                  </select>
+                </div>
+                <div className='w-full'>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">TOM DE PELE</label>
+                  <input type='text' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                </div>
               </div>
             </div>
 
-            <div className='flex flex-col md:flex-row gap-3'>
-              <div className='w-full'>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">TELEFONE</label>
-                <input className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
-              </div>
-              <div className='w-full'>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">CPF</label>
-                <input type='text' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
-              </div>
+            {/* FOOTER - Fica fixo na base do modal */}
+            <div className="p-6 border-t bg-amber-50">
+              <button className="w-full bg-green-600 text-white py-2 rounded-md font-bold hover:bg-green-700 shadow-md">
+                Salvar Cliente
+              </button>
             </div>
-
-            <div className='flex flex-col md:flex-row gap-3'>
-              <div className='w-full'>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">CURVATURA DO FIO</label>
-                <select className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" >
-                  <option value="">Selecione</option>
-                  <option value="1">1A, 1B, 1C</option>
-                  <option value="2">2A, 2B, 2C</option>
-                  <option value="3">3A, 3B, 3C</option>
-                  <option value="4">4A, 4B, 4C</option>
-                </select>                
-              </div>
-              <div className='w-full'>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">COR DO FIO (ATUALMENTE)</label>
-                <input type='text' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
-              </div>
-            </div>
-
-            <div className='flex flex-col md:flex-row gap-3'>
-              <div className='w-full'>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">TIPO DE PELE</label>
-                <select className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" >
-                  <option value="">Selecione</option>
-                  <option value="seca">Seca</option>
-                  <option value="mista">Mista</option>
-                  <option value="oleosa">Oleosa</option>
-                </select>
-              </div>
-              <div className='w-full'>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">TOM DE PELE</label>
-                <input type='text' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
-              </div>
-            </div>
-          </div>
-
-          {/* FOOTER - Fica fixo na base do modal */}
-          <div className="p-6 border-t bg-amber-50">
-            <button className="w-full bg-green-600 text-white py-2 rounded-md font-bold hover:bg-green-700 shadow-md">
-              Salvar Cliente
-            </button>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
-   {/* MODAL EDITAR CLIENTE (isModalEditCliente) */}
+      {/* MODAL EDITAR CLIENTE (isModalEditCliente) */}
       {isModalEditCliente && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className='w-full max-w-2xl max-h-[90vh] rounded-md shadow-lg bg-amber-50 flex flex-col overflow-hidden'>
-            
+
             <div className='flex justify-between p-6 border-b'>
               <h2 className='font-bold text-gray-800 text-lg'>Editar Cliente - <span className="text-amber-600">{editNome}</span></h2>
               <button onClick={() => setisModalEditCliente(false)} className="text-gray-400 hover:text-red-500"><i className="bi bi-x-lg"></i></button>
