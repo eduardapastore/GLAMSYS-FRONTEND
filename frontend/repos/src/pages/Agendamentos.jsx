@@ -501,7 +501,7 @@ const avisarVagaDisponivel = (pessoaEspera) => {
           <div className='fixed inset-0 bg-black/50 flex justify-center items-center z-50 backdrop-blur-sm'>
             <div className='bg-white rounded-xl shadow-2xl p-6 w-[450px] animate-in fade-in zoom-in duration-200'>
               <div className='flex justify-between items-center mb-6 border-b pb-2'>
-                <h2 className='font-bold text-xl'>Agendar Horário</h2>
+                <h2 className='font-bold text-xl uppercase'>Agendar Horário</h2>
                 <button onClick={() => setModalAberto(false)}><i className="bi bi-x-lg text-gray-500 hover:text-red-500"></i></button>
               </div>
 
@@ -514,17 +514,17 @@ const avisarVagaDisponivel = (pessoaEspera) => {
                 <div className='flex gap-4'>
                   <div className='flex-1'>
                     <label className='block text-xs font-bold text-gray-600 mb-1'>DATA</label>
-                    <input type='date' value={data} onChange={e => setData(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none" />
+                    <input type='date' value={data} onChange={e => setData(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-amber-500" />
                   </div>
                   <div className='flex-1'>
                     <label className='block text-xs font-bold text-gray-600 mb-1'>HORA</label>
-                    <input type='time' value={hora} onChange={e => setHora(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none" />
+                    <input type='time' value={hora} onChange={e => setHora(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-amber-500" />
                   </div>
                 </div>
 
                 <div>
                   <label className='block text-xs font-bold text-gray-600 mb-1'>SERVIÇO</label>
-                  <select value={servico_id} onChange={e => setServicoId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none">
+                  <select value={servico_id} onChange={e => setServicoId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-amber-500">
                     <option value="">Selecione...</option>
                     {servicos.map(s => <option key={s.id} value={s.id}>{s.descricao}</option>)}
                   </select>
@@ -532,14 +532,14 @@ const avisarVagaDisponivel = (pessoaEspera) => {
 
                 <div>
                   <label className='block text-xs font-bold text-gray-600 mb-1'>COLABORADOR</label>
-                  <select value={colaboradores_id} onChange={e => setColaboradoresId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none">
+                  <select value={colaboradores_id} onChange={e => setColaboradoresId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none focus:ring-amber-500">
                     <option value="">Selecione...</option>
                     {colaboradores.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
                   </select>
                 </div>
 
                 <button onClick={salvarAgendamento} className='w-full bg-green-600 text-white text-lg font-bold py-3 rounded-lg mt-4 hover:bg-green-700 transition-colors flex items-center justify-center gap-2'>
-                  <i className="bi bi-check2-circle"></i> Confirmar Agendamento
+                  Confirmar Agendamento
                 </button>
               </div>
             </div>

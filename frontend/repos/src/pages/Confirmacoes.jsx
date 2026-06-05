@@ -161,7 +161,7 @@ const Confirmacoes = () => {
                                     <p className="text-xs opacity-80 uppercase font-bold">Detalhes do Agendamento</p>
                                     <h3 className="text-xl font-bold">{ordemSelecionada.cliente_nome}</h3>
                                 </div>
-                                <button onClick={() => setModalAberto(false)} className="hover:bg-black/10 rounded-full p-1 transition-all">
+                                <button onClick={() => setModalAberto(false)} className="hover:bg-black/10 rounded-sm px-2 p-1 transition-all">
                                     <i className="bi bi-x-lg"></i>
                                 </button>
                             </div>
@@ -193,17 +193,11 @@ const Confirmacoes = () => {
                                 {ordemSelecionada.status !== 'REALIZADO' && (
                                     <button 
                                         onClick={confirmarPagamento}
-                                        className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-green-100"
+                                        className="flex-1 py-3 text-lg bg-green-600 hover:bg-green-700 text-white font-bold px-3 rounded-xl transition-all shadow-lg shadow-green-100"
                                     >
                                         Confirmar Agendamento
                                     </button>
                                 )}
-                                <button 
-                                    onClick={() => setModalAberto(false)}
-                                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl transition-all"
-                                >
-                                    Fechar
-                                </button>
                             </div>
                         </div>
                     </div>
