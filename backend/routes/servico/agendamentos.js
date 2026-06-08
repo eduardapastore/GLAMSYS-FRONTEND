@@ -112,9 +112,61 @@ router.get('/cliente/:id/resumo', async (req, res) => {
       LIMIT 1
     `, [id]);
 
+    // TICKET MÉDIO
+    const [ticket] = await pool.query(`
+      SELECT
+        COUNT(
+          CASE
+            WHEN os.status = 'FECHADA'
+            THEN os.id
+          END
+        ) AS total_atendimentos,
+
+        COALESCE(
+          SUM(
+            CASE
+              WHEN os.status = 'FECHADA'
+              THEN s.valor
+              ELSE 0
+            END
+          ),
+          0
+        ) AS valor_total_gasto,
+
+        COALESCE(
+          ROUND(
+            AVG(
+              CASE
+                WHEN os.status = 'FECHADA'
+                THEN s.valor
+                ELSE NULL
+              END
+            ),
+            2
+          ),
+          0
+        ) AS ticket_medio
+
+      FROM clientes c
+
+      LEFT JOIN ordens_servico os
+        ON c.id = os.cliente_id
+
+      LEFT JOIN servico s
+        ON os.servico_id = s.id
+
+      WHERE c.id = ?
+
+      GROUP BY c.id
+    `, [id]);
+
     res.json({
       proximoAgendamento: proximo[0] || null,
-      ultimoServico: ultimo[0] || null
+      ultimoServico: ultimo[0] || null,
+
+      total_atendimentos: ticket[0]?.total_atendimentos || 0,
+      valor_total_gasto: ticket[0]?.valor_total_gasto || 0,
+      ticket_medio: ticket[0]?.ticket_medio || 0
     });
 
   } catch (err) {
@@ -124,4 +176,6 @@ router.get('/cliente/:id/resumo', async (req, res) => {
     });
   }
 });
+
 module.exports = router;
+

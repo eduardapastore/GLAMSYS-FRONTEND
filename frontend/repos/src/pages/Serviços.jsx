@@ -49,6 +49,7 @@ const Serviços = () => {
   const [categoria, setCategoria] = useState("");
   const [valor, setValor] = useState("");
   const [duracao, setDuracao] = useState("");
+  const [servico_id, setServicoId] = useState("");
 
   const salvarServico = () => {
     if (!descricao || !categoria || !valor || !duracao) {
@@ -66,6 +67,35 @@ const Serviços = () => {
       })
       .catch(() => toast.error('Erro ao salvar Serviço'));
   };
+  const [editValor, setEditValor] = useState("");
+  const [editDescricao, setEditDescricao] = useState("");
+  const [editDuracao, setEditDuracao] = useState("");
+  const salvarAlteracoes = async () => {
+    try {
+      await axios.put(`http://localhost:3000/servicos/${servicoSelecionado.id}`, { descricao: editDescricao, valor: editValor, duracao: editDuracao });
+      toast.success("Item atualizado!");
+      setModalEditServico(false);
+      carregarDados();
+    } catch (error) { toast.error("Erro ao atualizar!"); }
+  };
+
+  const excluirServico = async () => {
+    try {
+      await axios.delete(`http://localhost:3000/servicos/${servicoSelecionado.id}`);
+      toast.success("Serviço excluído!");
+      setModalEditServico(false);
+      carregarDados();
+    }
+    catch (error) { toast.error("Erro ao excluir!"); }
+
+  };
+  const carregarDados = () => {
+    axios.get('http://localhost:3000/servicos').then(res => {
+      setServicos(res.data);
+      setServicosFiltrados(res.data);
+    }).catch(() => toast.error("Erro nos serviços"));
+  };
+
 
   const iconesCategoria = {
     "Cabelo": "bi-scissors",
@@ -77,6 +107,11 @@ const Serviços = () => {
   // Função para abrir edição
   const abrirEdicao = (servico) => {
     setServicoSelecionado(servico);
+
+    setEditDescricao(servico.descricao);
+    setEditValor(servico.valor);
+    setEditDuracao(servico.duracao);
+
     setModalEditServico(true);
   };
 
@@ -324,35 +359,43 @@ const Serviços = () => {
             </div>
             
             <form className="flex flex-col gap-3">
-              <label className='text-xs font-bold text-gray-500 uppercase'>Nome do Serviço</label>
-              <input type="text" defaultValue={servicoSelecionado?.descricao} className="border p-2 rounded-md focus:border-amber-600 outline-none" />
+              <label className='text-xs font-bold text-gray-400 uppercase'>Nome do Serviço</label>
+              <input
+                type="text"
+                value={editDescricao}
+                onChange={(e) => setEditDescricao(e.target.value)}
+                className="border p-2 rounded-md focus:border-amber-600 outline-none"
+              />
 
               <div className="flex gap-2">
                 <div className='w-1/2 flex flex-col'>
-                  <label className='text-xs font-bold text-gray-500 uppercase mb-2'>Preço</label>
-                  <input type="text" defaultValue={servicoSelecionado?.valor} className="border p-2 rounded-md outline-none focus:border-amber-600" />
+                  <label className='text-xs font-bold text-gray-400 uppercase mb-2'>Preço</label>
+                  <input
+                    type="number"
+                    value={editValor}
+                    onChange={(e) => setEditValor(e.target.value)}
+                    className="border p-2 rounded-md outline-none"
+                  />
                 </div>
                 <div className='w-1/2 flex flex-col'>
-                  <label className='text-xs font-bold text-gray-500 uppercase mb-2'>Duração</label>
-                  <input type="text" defaultValue={servicoSelecionado?.duracao} className="border p-2 rounded-md outline-none focus:border-amber-600" />
+                  <label className='text-xs font-bold text-gray-400 uppercase mb-2'>Duração</label>
+                  <input
+                    type="text"
+                    value={editDuracao}
+                    onChange={(e) => setEditDuracao(e.target.value)}
+                    className="border p-2 rounded-md outline-none"
+                  />
                 </div>
               </div>
 
-              <div className="flex w-full gap-2 mt-4">
-                <button 
-                  type="button" 
-                  onClick={() => { toast.success("Serviço atualizado!"); setModalEditServico(false); }} 
-                  className="bg-green-600 w-full text-white font-bold p-2 rounded-md hover:bg-green-700"
-                >
-                  Salvar
-                </button>
-                <button 
-                  type="button" 
-                  className="bg-red-600 w-full p-2 rounded-md text-amber-50 font-bold hover:bg-red-800"
-                >
-                  Excluir
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={salvarAlteracoes}
+                className="bg-green-600 text-white font-bold py-2 rounded-md hover:bg-green-700 mt-2"
+              >
+                Salvar Alterações
+              </button>
+              <button type="button" onClick={excluirServico} className="bg-red-600 p-2 rounded-md text-amber-50 text-base font-semibold hover:bg-red-800">Excluir Serviço</button>
             </form>
           </div>
         </div>
