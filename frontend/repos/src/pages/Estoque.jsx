@@ -220,10 +220,10 @@ const Estoque = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-3">
-                  {lista1.map((item, i) => <CardItem key={i} item={item} abrirModal={abrirModalEdicao} />)}
+                  {lista1.map((item, i) => <CardItem key={i} item={item} abrirModal={abrirModalEdicao} modalExclusao={setIsModalExclusao} />)}
                 </div>
                 <div className="flex flex-col gap-3">
-                  {lista2.map((item, i) => <CardItem key={i} item={item} abrirModal={abrirModalEdicao} />)}
+                  {lista2.map((item, i) => <CardItem key={i} item={item} abrirModal={abrirModalEdicao} modalExclusao={setIsModalExclusao} />)}
                 </div>
                 {listaParaExibir.length === 0 && <p className="text-gray-400 italic">Nenhum item encontrado.</p>}
               </div>
@@ -245,8 +245,8 @@ const Estoque = () => {
                 <div key={f.id} className="p-4 border-b last:border-0 flex justify-between items-center">
                   <div>
                     <p className="font-bold text-amber-700">{f.nome_razao}</p>
-                    <p className="text-xs text-gray-500">{f.documento} • {f.telefone}</p>
-                    <span className="text-[10px] bg-amber-100 text-amber-600 px-2 py-1 rounded font-bold uppercase">{f.endereco}</span>
+                    <p className="text-xs text-gray-400">{f.documento} • {f.telefone}</p>
+                    <span className="text-xs bg-amber-100 text-amber-600 px-2 py-1 rounded font-bold uppercase">{f.endereco}</span>
                   </div>
                   <div className="flex gap-4">
                     <button onClick={() => window.open(`https://wa.me/${f.telefone.replace(/\D/g,'')}`)}><i className="bi bi-whatsapp text-green-600 text-2xl"></i></button>
@@ -271,7 +271,7 @@ const Estoque = () => {
                 </div>
               </div>
               {produtos.map(p => (
-                <div key={p.id} className="p-3 border-b last:border-0 flex justify-between items-center align-middle bg-amber-50 mb-2 rounded-md shadow-sm">
+                <div key={p.id} className="p-3 border-b last:border-0 flex justify-between items-center align-middle bg-white mb-2 rounded-md shadow-sm">
                   <div>
                     <p className="font-bold text-gray-800">{p.nome}</p>
                     <p className="text-xs text-gray-400">{p.descricao}</p>
@@ -279,7 +279,7 @@ const Estoque = () => {
                   <div className="text-right flex gap-8">
                     <div>
                       <p className="text-sm font-black text-green-600">R$ {p.preco_venda}</p>
-                      <p className="text-[10px] text-gray-400 uppercase">Preço sugerido</p>
+                      <p className="text-xs text-gray-400 uppercase">Preço sugerido</p>
                     </div>
                     <div className='flex gap-2'>
                       <button><i class="bi bi-pencil-square text-2xl text-amber-600"></i></button>
@@ -296,32 +296,34 @@ const Estoque = () => {
 
       {/* --- MODAIS --- */}
 
-      {/* 1. EDITAR */}
+      {/* 1. EDITAR ITEM DO ESTOQUE */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4">
           <div className="bg-white w-full max-w-sm p-6 rounded-md shadow-md">
-            <h2 className="text-lg font-semibold mb-4 text-amber-600 border-b pb-2">Editar Item</h2>
+            <div className="flex justify-between text-center mb-4 border-b border-gray-300">
+              <h2 className="text-lg font-bold mb-4 text-black uppercase">Editar Item</h2>
+              <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-red-500"><i className="bi bi-x-lg"></i></button>
+            </div>
             <div className="flex flex-col gap-3">
-              <label className="text-[10px] font-bold uppercase text-gray-500">Nome do Produto</label>
+              <label className="text-xs font-bold uppercase text-gray-400">Nome do Produto</label>
               <input type="text" value={editNome} onChange={(e) => setEditNome(e.target.value)} className="border p-2 rounded text-sm focus:border-amber-600 outline-none" />
-              <label className="text-[10px] font-bold uppercase text-gray-500">Localização</label>
+              <label className="text-xs font-bold uppercase text-gray-400">Localização</label>
               <input type="text" value={editDescricao} onChange={(e) => setEditDescricao(e.target.value)} className="border p-2 rounded text-sm focus:border-amber-600 outline-none" />
               <div className="flex gap-2">
                 <div className="flex flex-col w-1/2">
-                  <label className="text-[10px] font-bold uppercase text-gray-500">Custo</label>
-                  <input type="number" value={editCusto} onChange={(e) => setEditCusto(e.target.value)} className="border p-2 rounded text-sm outline-none" />
+                  <label className="text-xs font-bold uppercase text-gray-400">Custo</label>
+                  <input type="number" value={editCusto} onChange={(e) => setEditCusto(e.target.value)} className="border p-2 rounded text-sm outline-none focus:border-amber-600" />
                 </div>
                 <div className="flex flex-col w-1/2">
-                  <label className="text-[10px] font-bold uppercase text-gray-500">Venda</label>
-                  <input type="number" value={editVenda} onChange={(e) => setEditVenda(e.target.value)} className="border p-2 rounded text-sm outline-none" />
+                  <label className="text-xs font-bold uppercase text-gray-400">Venda</label>
+                  <input type="number" value={editVenda} onChange={(e) => setEditVenda(e.target.value)} className="border p-2 rounded text-sm outline-none focus:border-amber-600" />
                 </div>
               </div>
-              <label className="text-[10px] font-bold uppercase text-gray-500">Quantidade em Estoque</label>
-              <input type="number" value={editQtd} onChange={(e) => setEditQtd(e.target.value)} className="border p-2 rounded text-sm outline-none" />
+              <label className="text-xs font-bold uppercase text-gray-400">Quantidade em Estoque</label>
+              <input type="number" value={editQtd} onChange={(e) => setEditQtd(e.target.value)} className="border p-2 rounded text-sm outline-none focus:border-amber-600" />
             </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded text-sm" onClick={() => setModalOpen(false)}>Cancelar</button>
-              <button className="px-4 py-2 bg-green-600 text-white rounded text-sm font-semibold" onClick={salvarEdicao}>Salvar</button>
+            <div className="flex gap-2 mt-6 border-t border-gray-300">
+              <button className="bg-green-600 w-full text-white font-bold p-2 rounded-md hover:bg-green-700" onClick={salvarEdicao}>Atualizar</button>
             </div>
           </div>
         </div>
@@ -332,19 +334,19 @@ const Estoque = () => {
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-96 shadow-xl">
             <div className='flex justify-between mb-4 border-b pb-2'>
-              <h2 className='font-bold text-gray-800'>Lançar no Estoque</h2>
+              <h2 className='font-bold text-lg text-gray-800 uppercase'>Lançar no Estoque</h2>
               <button onClick={() => setisModalEstoque(false)} className="text-gray-400 hover:text-red-500"><i className="bi bi-x-lg"></i></button>
             </div>
             <div className="flex flex-col gap-3">
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>Produto</label>
+              <label className='text-xs font-bold text-gray-400 uppercase'>Produto</label>
               <select value={produto_id} onChange={e => setProdutosId(e.target.value)} className='border p-2 rounded-md text-sm outline-none focus:border-amber-600'>
                 <option value="">Selecione um produto</option>
                 {produtos.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
               </select>
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>Quantidade de Entrada</label>
-              <input type="number" value={quantidade} onChange={e => setQuantidade(e.target.value)} className="border p-2 rounded-md text-sm outline-none" />
-              <label className='text-[10px] font-bold text-gray-600 uppercase'>Local de Armazenamento</label>
-              <input type="text" placeholder="Ex: Gaveta 02" value={local} onChange={e => setLocal(e.target.value)} className="border p-2 rounded-md text-sm outline-none" />
+              <label className='text-xs font-bold text-gray-400 uppercase'>Quantidade de Entrada</label>
+              <input type="number" value={quantidade} onChange={e => setQuantidade(e.target.value)} className="border p-2 rounded-md text-sm outline-none focus:border-amber-600 " />
+              <label className='text-xs font-bold text-gray-400 uppercase'>Local de Armazenamento</label>
+              <input type="text" placeholder="Ex: Gaveta 02" value={local} onChange={e => setLocal(e.target.value)} className="border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
               <button onClick={salvarEstoque} className="bg-green-600 text-white py-2 rounded-md font-bold mt-4 hover:bg-green-700 transition-all shadow-md">
                 Confirmar Entrada
               </button>
@@ -359,44 +361,44 @@ const Estoque = () => {
           <div className="bg-white rounded-lg w-full max-w-md shadow-xl flex flex-col max-h-[90vh]">
             {/* HEADER DE TÍTULO */}
             <div className='flex justify-between items-center p-6 border-b'>
-              <h2 className='font-bold text-gray-800 text-lg'>Novo Fornecedor</h2>
+              <h2 className='font-bold text-gray-800 text-lg uppercase'>Novo Fornecedor</h2>
               <button onClick={() => setisModalFornecedor(false)} className="text-gray-400 hover:text-red-500"><i className="bi bi-x-lg"></i></button>
             </div>
             {/* CONTEÚDO */}
             <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
               <div>
-                <label className='text-[10px] font-bold text-gray-500 uppercase'>Razão Social</label>
+                <label className='text-xs font-bold text-gray-400 uppercase'>Razão Social</label>
                 <input type="text" value={nome_razao} onChange={e => setnomeRazao(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
               </div>
               <div className="flex gap-2">
                 <div className="w-1/2">
-                  <label className='text-[10px] font-bold text-gray-500 uppercase'>Documento (CNPJ/CPF)</label>
-                  <input type="text" value={documento} onChange={e => setDocumento(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none" />
+                  <label className='text-xs font-bold text-gray-400 uppercase'>Documento (CNPJ/CPF)</label>
+                  <input type="text" value={documento} onChange={e => setDocumento(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
                 </div>
                 <div className="w-1/2">
-                  <label className='text-[10px] font-bold text-gray-500 uppercase'>Telefone</label>
-                  <input type="text" value={telefone} onChange={e => setTelefone(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none" />
+                  <label className='text-xs font-bold text-gray-400 uppercase'>Telefone</label>
+                  <input type="text" value={telefone} onChange={e => setTelefone(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
                 </div>
               </div>
               <div>
-                <label className='text-[10px] font-bold text-gray-500 uppercase'>E-mail de Contato</label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none" />
+                <label className='text-xs font-bold text-gray-400 uppercase'>E-mail de Contato</label>
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
               </div>
               <hr />
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                   <label className='text-[10px] font-bold text-gray-500 uppercase'>CEP</label>
-                   <input type="text" value={cep} onChange={e => setCep(e.target.value)} className="w-full border p-2 rounded-md text-sm" />
+                   <label className='text-xs font-bold text-gray-400 uppercase'>CEP</label>
+                   <input type="text" value={cep} onChange={e => setCep(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
                 </div>
                 <div>
-                   <label className='text-[10px] font-bold text-gray-500 uppercase'>Cidade</label>
-                   <input type="text" value={cidade} onChange={e => setCidade(e.target.value)} className="w-full border p-2 rounded-md text-sm" />
+                   <label className='text-xs font-bold text-gray-400 uppercase'>Cidade</label>
+                   <input type="text" value={cidade} onChange={e => setCidade(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
                 </div>
                 <div className="col-span-2">
-                   <label className='text-[10px] font-bold text-gray-500 uppercase'>Rua e Número</label>
+                   <label className='text-xs font-bold text-gray-400 uppercase'>Rua e Número</label>
                    <div className="flex gap-2">
-                    <input type="text" value={rua} onChange={e => setRua(e.target.value)} className="flex-1 border p-2 rounded-md text-sm" />
-                    <input type="text" value={numero} onChange={e => setNumero(e.target.value)} className="w-20 border p-2 rounded-md text-sm" />
+                    <input type="text" value={rua} onChange={e => setRua(e.target.value)} className="flex-1 border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                    <input type="text" value={numero} onChange={e => setNumero(e.target.value)} className="w-20 border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
                    </div>
                 </div>
               </div>
@@ -416,37 +418,37 @@ const Estoque = () => {
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-md shadow-xl flex flex-col max-h-[90vh]">
             <div className='flex justify-between items-center p-6 border-b'>
-              <h2 className='font-bold text-gray-800 text-lg'>Novo Produto no Catálogo</h2>
+              <h2 className='font-bold uppercase text-gray-800 text-lg'>Novo Produto no Catálogo</h2>
               <button onClick={() => setIsModalProduto(false)} className="text-gray-400 hover:text-red-500"><i className="bi bi-x-lg"></i></button>
             </div>
             <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
               <div>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">Nome</label>
+                <label className="text-xs font-bold text-gray-400 uppercase">Nome</label>
                 <input type="text" value={nome} onChange={e => setNome(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
               </div>
               <div>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">Marca/Descrição</label>
+                <label className="text-xs font-bold text-gray-400 uppercase">Marca/Descrição</label>
                 <input type="text" value={descricao} onChange={e => setDescricao(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none" />
               </div>
               <div>
-                <label className="text-[10px] font-bold text-gray-500 uppercase">Fornecedor</label>
+                <label className="text-xs font-bold text-gray-400 uppercase">Fornecedor</label>
                 <select value={fornecedor_id} onChange={e => setFornecedorId(e.target.value)} className='w-full border p-2 rounded-md text-sm outline-none'>
                   <option value="">Selecione o Fornecedor</option>
                   {fornecedores.map(f => <option key={f.id} value={f.id}>{f.nome_razao}</option>)}
                 </select>
               </div>
               <div className="bg-amber-50 p-4 rounded-md border border-amber-700 shadow-lg">
-                 <p className="text-[10px] font-bold text-amber-600 uppercase mb-2">Precificação Automática</p>
+                 <p className="text-xs font-bold text-amber-600 uppercase mb-2">Precificação Automática</p>
                  <div className="flex gap-2">
                     <div className="w-1/2">
-                      <label className="text-[10px] text-gray-500 uppercase font-bold">Custo R$</label>
+                      <label className="text-xs text-gray-400 uppercase font-bold">Custo R$</label>
                       <input type="number" value={preco_custo} onChange={e => {
                         setPrecoCusto(e.target.value);
                         setPrecoVenda((parseFloat(e.target.value) * (1 + margem/100)).toFixed(2));
                       }} className="w-full border p-2 rounded text-sm" />
                     </div>
                     <div className="w-1/2">
-                      <label className="text-[10px] text-gray-500 uppercase font-bold">Margem %</label>
+                      <label className="text-xs text-gray-400 uppercase font-bold">Margem %</label>
                       <input type="number" value={margem} onChange={e => {
                         setMargem(e.target.value);
                         setPrecoVenda((parseFloat(preco_custo) * (1 + e.target.value/100)).toFixed(2));
@@ -454,7 +456,7 @@ const Estoque = () => {
                     </div>
                  </div>
                  <div className="mt-3">
-                    <label className="text-[10px] font-bold text-gray-700 uppercase">Preço Final de Venda</label>
+                    <label className="text-xs font-bold text-gray-700 uppercase">Preço Final de Venda</label>
                     <input type="text" value={preco_venda} readOnly className="w-full bg-white border border-amber-200 p-2 rounded font-bold text-green-700" />
                  </div>
               </div>
@@ -483,7 +485,7 @@ const Estoque = () => {
   );
 };
 
-const CardItem = ({ item, abrirModal }) => {
+const CardItem = ({ item, abrirModal, modalExclusao }) => {
   return (
     <div className="relative p-4 bg-white border border-gray-200 rounded-lg flex justify-between items-center shadow-sm hover:shadow-md transition-all group">
       <div className="flex flex-col gap-1">
@@ -495,9 +497,14 @@ const CardItem = ({ item, abrirModal }) => {
         </div>
       </div>
       <div className="flex flex-col items-end">
-        <button onClick={() => abrirModal(item)} className="text-amber-600 hover:bg-amber-50 p-2 rounded-full transition-colors opacity-0 group-hover:opacity-100">
-          <i className="bi bi-pencil-square"></i>
-        </button>
+        <div>
+          <button onClick={() => abrirModal(item)} className="text-xl text-amber-600 hover:bg-amber-100 p-2 rounded-full">
+            <i className="bi bi-pencil-square"></i>
+          </button>
+          <button onClick={() => modalExclusao(item)} className="text-xl text-red-600 hover:bg-red-50 p-2 rounded-full">
+            <i className="bi bi-trash3"></i>
+          </button>
+        </div>
         <p className="text-2xl font-black text-gray-800 leading-none">{item.quantidade}</p>
         <p className="text-[9px] text-gray-400 font-bold uppercase">Unidades</p>
       </div>

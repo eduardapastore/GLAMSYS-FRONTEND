@@ -1,20 +1,17 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import ptBrLocale from "@fullcalendar/core/locales/pt-br";
 import toast, { Toaster } from 'react-hot-toast';
 
 const Confirmacoes = () => {
     const [eventos, setEventos] = useState([]);
     const [modalAberto, setModalAberto] = useState(false);
     const [ordemSelecionada, setOrdemSelecionada] = useState(null);
+    const [filtroStatus, setFiltroStatus] = useState('TODOS');
 
     const dummyOrdens = [
-        { id: 1, cliente_nome: "Ana Silva", servico_nome: "Corte e Escova", data_agendamento: "2026-04-20", status: "ABERTO", valor: 120.00, hora: "14:00" },
-        { id: 2, cliente_nome: "Marcos Oliveira", servico_nome: "Barba e Cabelo", data_agendamento: "2026-04-20", status: "REALIZADO", valor: 85.00, hora: "15:30" },
-        { id: 3, cliente_nome: "Juliana Costa", servico_nome: "Manicure", data_agendamento: "2026-04-21", status: "ABERTO", valor: 50.00, hora: "09:00" },
+        { id: 1, cliente_nome: "Ana Silva", servico_nome: "Corte e Escova", data_agendamento: "2026-04-20", status: "PENDENTE", valor: 120.00, hora: "14:00" },
+        { id: 2, cliente_nome: "Marcos Viana", servico_nome: "Barba e Cabelo", data_agendamento: "2026-04-20", status: "REALIZADO", valor: 85.00, hora: "15:30" },
+        { id: 3, cliente_nome: "Juliana Costa", servico_nome: "Manicure", data_agendamento: "2026-04-21", status: "PENDENTE", valor: 50.00, hora: "09:00" },
     ];
 
     useEffect(() => {
@@ -28,7 +25,7 @@ const Confirmacoes = () => {
             start: os.data_agendamento, 
             backgroundColor: os.status === 'REALIZADO' ? '#10b981' : '#f59e0b',
             borderColor: 'transparent',
-            extendedProps: { ...os } // Passamos todos os dados para cá
+            extendedProps: { ...os }
         }));
         setEventos(dadosFormatados);
     };
@@ -42,8 +39,15 @@ const Confirmacoes = () => {
     const confirmarPagamento = () => {
         toast.success(`Pagamento de ${ordemSelecionada.cliente_nome} confirmado!`);
         setModalAberto(false);
-        // Aqui você faria o axios.put para atualizar o status no banco
+        
     };
+
+    const ordensFiltradas =
+    filtroStatus === 'TODOS'
+        ? dummyOrdens
+        : dummyOrdens.filter(
+              (ordem) => ordem.status === filtroStatus
+          );
 
     return (
         <main className="w-screen flex h-screen overflow-hidden ">
@@ -64,25 +68,86 @@ const Confirmacoes = () => {
                     </div>
                 </div>
 
-                <div className='p-4 rounded-xl shadow-sm border  flex-1'>
-                    <FullCalendar
-                        locale={ptBrLocale}
-                        plugins={[dayGridPlugin, interactionPlugin]}
-                        initialView="dayGridMonth"
-                        events={eventos} 
-                        eventClick={handleEventClick} // Gatilho do clique
-                        headerToolbar={{ left: "prev,next today", center: "title", right: "" }}
-                        height="100%"
-                        eventContent={(arg) => (
-                            <div className="p-1 truncate cursor-pointer">
-                                <div className="flex items-center gap-1 text-white">
-                                    <span className="font-bold uppercase text-[9px] truncate">
-                                        {arg.event.title}
-                                    </span>
+                 <div className="flex gap-2 mt-4">
+                        <button
+                            onClick={() => setFiltroStatus('TODOS')}
+                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                                filtroStatus === 'TODOS'
+                                    ? 'bg-amber-600 text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                        >
+                            Todos
+                        </button>
+
+                        <button
+                            onClick={() => setFiltroStatus('PENDENTE')}
+                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                                filtroStatus === 'PENDENTE'
+                                    ? 'bg-amber-600 text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                        >
+                            Pendentes
+                        </button>
+
+                        <button
+                            onClick={() => setFiltroStatus('REALIZADO')}
+                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                                filtroStatus === 'REALIZADO'
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                        >
+                            Realizados
+                        </button>
+                </div>
+
+                {/* CARDS DE AGENDAMENTOS */}
+                <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-4">
+                    {ordensFiltradas.map((ordem) => (
+                        <div
+                            key={ordem.id}
+                            onClick={() => {
+                                setOrdemSelecionada(ordem);
+                                setModalAberto(true);
+                            }}
+                            className=" bg-white rounded-2xl border self-center border-gray-200 p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer"
+                        >
+                            <div className="flex justify-between items-start mb-4">
+                                <h3 className="font-bold text-md text-gray-800">
+                                    {ordem.cliente_nome}
+                                </h3>
+
+                                <span
+                                    className={`text-xs font-bold px-3 py-1 rounded-full ${
+                                        ordem.status === "REALIZADO"
+                                            ? "bg-green-100 text-green-700"
+                                            : "bg-amber-100 text-amber-700"
+                                    }`}
+                                >
+                                    {ordem.status}
+                                </span>
+                            </div>
+
+                            <div className="flex flex-col gap-3 text-xs">
+                                <div className="flex items-center gap-2 text-gray-600">
+                                    <i className="bi bi-calendar-event"></i>
+                                    <span>{ordem.data_agendamento}</span>
+                                </div>
+
+                                <div className="flex items-center gap-2 text-gray-600">
+                                    <i className="bi bi-clock"></i>
+                                    <span>{ordem.hora}</span>
+                                </div>
+
+                                <div className="flex items-center gap-2 text-gray-600">
+                                    <i className="bi bi-scissors"></i>
+                                    <span>{ordem.servico_nome}</span>
                                 </div>
                             </div>
-                        )}
-                    />
+                        </div>
+                    ))}
                 </div>
             </section>
 
@@ -96,7 +161,7 @@ const Confirmacoes = () => {
                                     <p className="text-xs opacity-80 uppercase font-bold">Detalhes do Agendamento</p>
                                     <h3 className="text-xl font-bold">{ordemSelecionada.cliente_nome}</h3>
                                 </div>
-                                <button onClick={() => setModalAberto(false)} className="hover:bg-black/10 rounded-full p-1 transition-all">
+                                <button onClick={() => setModalAberto(false)} className="hover:bg-black/10 rounded-sm px-2 p-1 transition-all">
                                     <i className="bi bi-x-lg"></i>
                                 </button>
                             </div>
@@ -128,17 +193,11 @@ const Confirmacoes = () => {
                                 {ordemSelecionada.status !== 'REALIZADO' && (
                                     <button 
                                         onClick={confirmarPagamento}
-                                        className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-green-100"
+                                        className="flex-1 py-3 text-lg bg-green-600 hover:bg-green-700 text-white font-bold px-3 rounded-xl transition-all shadow-lg shadow-green-100"
                                     >
                                         Confirmar Agendamento
                                     </button>
                                 )}
-                                <button 
-                                    onClick={() => setModalAberto(false)}
-                                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl transition-all"
-                                >
-                                    Fechar
-                                </button>
                             </div>
                         </div>
                     </div>

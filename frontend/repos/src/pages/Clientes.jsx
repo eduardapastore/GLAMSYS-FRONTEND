@@ -166,31 +166,31 @@ const Clientes = () => {
         {/* DASH DE CLIENTES */}
         <div className='flex justify-between gap-4 font-semibold text-amber-50'>
           <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
-            <i class="bi bi-people text-3xl"></i>
+            <i class="bi bi-people text-xl"></i>
             <div>
               <p className='font-semibold'>Total de Clientes</p>
-              <p className='text-lg'>10</p>
+              <p className='text-base font-light'>10</p>
             </div>
           </div>
 
-          <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
-            <i className="bi bi-person-add text-3xl"></i>
+          <div className='flex gap-4 bg-amber-700 p-3 text-xs rounded-md items-center shadow-md'>
+            <i className="bi bi-person-add text-xl"></i>
             <div>
               <p className='font-semibold'>Clientes Novos no Mês</p>
-              <p className='text-lg'>10</p>
+              <p className='text-base font-light'>10</p>
             </div>
           </div>
 
-          <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
-            <i class="bi bi-cake2 text-3xl"></i>
+          <div className='flex gap-4 bg-amber-600 p-3 text-xs rounded-md items-center shadow-md'>
+            <i class="bi bi-cake2 text-xl"></i>
             <div>
               <p className='font-semibold'>Aniversariantes do Dia</p>
-              <p className='text-lg'>9</p>
+              <p className='text-base font-light'>9</p>
             </div>
           </div>
 
-          <div className='flex gap-4 bg-slate-950 p-3 text-xs rounded-md items-center shadow-md'>
-            <i class="bi bi-bag-heart text-3xl"></i>
+          <div className='flex gap-4 bg-amber-500 p-3 text-xs rounded-md items-center shadow-md'>
+            <i class="bi bi-bag-heart text-xl"></i>
             <div>
               <p className='font-semibold'>Serviço Mais Contratado</p>
               <p className='text-base font-light'>Tratamento de Hidratação</p>
@@ -372,18 +372,18 @@ const Clientes = () => {
       {/* MODAL DE ADIÇÃO DE CLIENTE */}
       {isModalAddCliente && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className='w-full max-w-2xl max-h-[90vh] rounded-md shadow-lg bg-amber-50 flex flex-col p-0 border-b text-start overflow-hidden'>
+          <div className='w-full max-w-2xl max-h-[90vh] rounded-md shadow-lg bg-white flex flex-col p-0 border-b text-start overflow-hidden'>
 
             {/* HEADER */}
             <div className='flex justify-between p-6 mb-0'>
-              <h2 className='font-bold text-gray-800 text-lg'>Adicionar Novo Cliente</h2>
+              <h2 className='font-bold text-gray-800 text-lg uppercase'>Adicionar Novo Cliente</h2>
               <button onClick={() => setisModalAddCliente(false)} className="text-gray-400 hover:text-red-500">
                 <i className="bi bi-x-lg"></i>
               </button>
             </div>
 
             {/* CONTEÚDO */}
-            <div className="flex-1 overflow-y-auto p-8 mt-0 flex flex-col gap-4">
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
               <div className='mb-0'>
                 <label className="text-[10px] font-bold text-gray-500 uppercase">NOME</label>
                 <input className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />

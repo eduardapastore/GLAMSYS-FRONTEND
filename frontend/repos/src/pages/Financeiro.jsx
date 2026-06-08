@@ -188,7 +188,6 @@ const Financeiro = () => {
         <header className='flex justify-between items-center mb-6'>
           <div>
             <h2 className='font-bold text-3xl text-gray-800 tracking-tight'>Financeiro</h2>
-            <p className='text-gray-500 text-sm'>Gestão de fluxo de caixa (6 meses)</p>
           </div>
           <button
             className='flex items-center gap-2 px-4 py-2 rounded-lg font-bold bg-amber-600 text-white hover:bg-amber-700 shadow-md transition-all'
@@ -284,31 +283,31 @@ const Financeiro = () => {
             <div className=''>
               {/* TÍTULO DO LANÇAMENTO */}
               <label className='block text-xs font-bold text-gray-600 mb-1 uppercase'>título do lançamento</label>
-              <input type="text" placeholder="Descrição" value={descricao} onChange={e => setDescricao(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none mb-3" />
+              <input type="text" placeholder="Descrição" value={descricao} onChange={e => setDescricao(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none mb-3 focus:border-amber-600" />
 
               {/* VALOR DO LANÇAMENTO */}
               <label className="className='block text-xs font-bold text-gray-600 mb-1 uppercase">valor do lançamento</label>
-              <input type="text" placeholder="Valor R$" value={valor} onChange={e => setValor(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none mb-3" />
+              <input type="text" placeholder="Valor R$" value={valor} onChange={e => setValor(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none mb-3 focus:border-amber-600" />
 
               {/* SELECIONAR TIPO */}
               <div className='flex justify-between gap-2 mb-3'>
                 <div>
                   <label className="className='block text-xs font-bold text-gray-600 mb-1 uppercase">Tipo de despesa</label>
-                  <select value={tipo_lancamento_id} onChange={e => setTipoLancamentoId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none">
+                  <select value={tipo_lancamento_id} onChange={e => setTipoLancamentoId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none focus:border-amber-600">
                     <option value="">Tipo</option>
                     {tipo_lancamento.map(t => <option key={t.id} value={t.id}>{t.desc}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="className='block text-xs font-bold text-gray-600 mb-1 uppercase">Conta relacionada</label>
-                  <select value={conta_financeira_id} onChange={e => setContaFinanceiraId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none">
+                  <select value={conta_financeira_id} onChange={e => setContaFinanceiraId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none focus:border-amber-600">
                     <option value="">Conta Relacionada</option>
                     {contas_financeiras.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="className='block text-xs font-bold text-gray-600 mb-1 uppercase">Meio de pagamento</label>
-                  <select value={meio_pagamento_id} onChange={e => setMeioPagamentoId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none">
+                  <select value={meio_pagamento_id} onChange={e => setMeioPagamentoId(e.target.value)} className="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none focus:border-amber-600">
                     <option value="">Meio de pagamento</option>
                     {meio_pagamento.map(m => <option key={m.id} value={m.id}>{m.tipo}</option>)}
                   </select>
@@ -318,7 +317,6 @@ const Financeiro = () => {
               {/* SALVAR */}
               <div className='pt-4 border-t border-gray-300'>
                 <button onClick={salvarLancamentos} className="w-full flex gap-2 justify-center text-xl bg-green-600 text-white py-3 rounded-md font-bold hover:bg-green-700">
-                  <i className="bi bi-check2-circle"></i>
                   Salvar
                 </button>
               </div>

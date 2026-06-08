@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
-import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import ptBrLocale from '@fullcalendar/core/locales/pt-br';
 import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, CartesianGrid } from "recharts";
 import axios from 'axios';
 
@@ -49,6 +47,33 @@ const Dashboard = () => {
     entradas: financeiroPorMes[mes].entradas,
     saidas: financeiroPorMes[mes].saidas
   }));
+
+  const agendamentosHoje = [
+  {
+    id: 1,
+    cliente: "Maria Silva",
+    servico: "Corte Feminino",
+    horario: "09:00"
+  },
+  {
+    id: 2,
+    cliente: "João Santos",
+    servico: "Barba",
+    horario: "10:30"
+  },
+  {
+    id: 3,
+    cliente: "Ana Costa",
+    servico: "Escova",
+    horario: "13:00"
+  },
+  {
+    id: 4,
+    cliente: "Carlos Oliveira",
+    servico: "Corte e Barba",
+    horario: "15:00"
+  }
+];
 
   return (
     <div className='w-screen flex h-screen overflow-hidden bg-transparent'>
@@ -147,21 +172,37 @@ const Dashboard = () => {
           </div>
 
           {/* CALENDÁRIO */}
-          <div className='w-full lg:w-[320px] bg-amber-50 p-4 rounded-xl border shadow-sm mini-calendar lg:order-last'>
-            <p className="text-xs font-bold text-gray-400 uppercase mb-3 tracking-wider">Agenda Mensal</p>
-            <div className='h-[260px] overflow-hidden'>
-              <FullCalendar
-                locale={ptBrLocale}
-                plugins={[dayGridPlugin, interactionPlugin]}
-                initialView="dayGridMonth"
-                height="100%"
-                headerToolbar={{ left: "prev", center: "title", right: "next" }}
-                fixedWeekCount={false}
-                dayMaxEventRows={2}
-                events={agendamentos}
-              />
-            </div>
-          </div>
+          {/* AGENDAMENTOS DO DIA */}
+          <div className='w-full lg:w-[320px] bg-amber-50 p-4 rounded-xl border shadow-sm lg:order-last'>
+            <p className="text-xs font-bold text-gray-400 uppercase mb-3 tracking-wider">
+              Agendamentos do Dia - <span className="text-amber-700 font-bold">Total {agendamentosHoje.length}</span>
+            </p>
+
+              <div className="flex flex-col gap-3 max-h-[316px] overflow-y-auto">
+                {agendamentosHoje.map((agendamento) => (
+                  <div
+                    key={agendamento.id}
+                    className="bg-white rounded-xl p-3 border border-gray-100 hover:border-amber-300 transition-all"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h4 className="font-semibold text-sm text-gray-800">
+                          {agendamento.cliente}
+                        </h4>
+
+                        <p className="text-xs text-gray-500 mt-1">
+                          {agendamento.servico}
+                        </p>
+                      </div>
+
+                      <div className="bg-amber-100 text-amber-700 font-bold text-xs px-3 py-1 rounded-full">
+                        {agendamento.horario}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+      </div>
         </div>
       </main>
     </div>

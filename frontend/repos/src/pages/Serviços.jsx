@@ -12,7 +12,7 @@ const Serviços = () => {
   const [servicosFiltrados, setServicosFiltrados] = useState([]);
   const [pesquisa, setPesquisa] = useState(''); // Texto do campo de pesquisa
 
-  // CÁLCULO DE PREÇO DO SERVIÇO
+  // CÁLCULO DE PREÇO DO SERVIÇO (Simulação do Modal Add)
   const [precoServico, setPrecoServico] = useState(0);
   const [comissaoPercentual, setComissaoPercentual] = useState(0);
   const [taxaNoShow, setTaxaNoShow] = useState(0);
@@ -23,9 +23,10 @@ const Serviços = () => {
   // PREÇO FINAL
   const precoFinal = Number(precoServico) + Number(taxaNoShow);
 
+  // DUMMY DATA RESTAURADA
   const dummyServicos = [
-    { id: 1, nome: "Hidratação Profunda", categoria: "Cabelo", preco: 80.00, duracao: "60 min", comissao: "40%", descricao: "Tratamento intenso para fios ressecados." },
-    { id: 2, nome: "Limpeza de Pele", categoria: "Estética", preco: 120.00, duracao: "90 min", comissao: "50%", descricao: "Extração de cravos e revitalização facial." }
+    { id: 1, nome: "Hidratação Profunda", descricao: "Hidratação Profunda", categoria: "Cabelo", valor: 80.00, duracao: "60 min", comissao: "40%" },
+    { id: 2, nome: "Limpeza de Pele", descricao: "Limpeza de Pele", categoria: "Estética", valor: 120.00, duracao: "90 min", comissao: "50%" }
   ];
 
   const [servicos, setServicos] = useState([]);
@@ -36,7 +37,12 @@ const Serviços = () => {
         setServicos(response.data);
         setServicosFiltrados(response.data);
       })
-      .catch(() => toast.error('Erro ao carregar serviços'));
+      .catch(() => {
+        toast.error('Erro ao carregar serviços do servidor. Usando dados locais.');
+        // Se a API falhar, carrega os dados dummy para a tela não quebrar
+        setServicos(dummyServicos);
+        setServicosFiltrados(dummyServicos);
+      });
   }, []);
 
   const [descricao, setDescricao] = useState("");
@@ -46,7 +52,9 @@ const Serviços = () => {
   const [servico_id, setServicoId] = useState("");
 
   const salvarServico = () => {
-    if (!descricao || !categoria || !valor || !duracao) return toast.error("Preencha os campos obrigatórios!");
+    if (!descricao || !categoria || !valor || !duracao) {
+      return toast.error("Preencha os campos obrigatórios!");
+    }
 
     axios.post('http://localhost:3000/servicos', {
       descricao,
@@ -106,15 +114,16 @@ const Serviços = () => {
 
     setModalEditServico(true);
   };
+
   // FUNÇÃO PARA FILTRAR SERVIÇOS
   const filtrarServicos = () => {
     if (!pesquisa.trim()) {
-      setServicosFiltrados(servicos); // se o campo de pesquisa estiver vazio exibe todos os serviços
+      setServicosFiltrados(servicos);
       return;
     }
 
     const filtrados = servicos.filter(servico =>
-      servico.descricao.toLowerCase().includes(pesquisa.toLowerCase())
+      servico.descricao?.toLowerCase().includes(pesquisa.toLowerCase())
     );
 
     setServicosFiltrados(filtrados);
@@ -144,17 +153,17 @@ const Serviços = () => {
 
         {/* PESQUISA */}
         <div className='flex gap-2 justify-between items-baseline'>
-          <h3 className="font-bold mb-4 text-base uppercase text-gray-400 text-[10px]">Listagem de Serviços</h3>
+          <h3 className="font-bold mb-4 text-base uppercase text-gray-500 text-[10px]">Listagem de Serviços</h3>
           <div className="flex gap-2 items-center">
             <input
               type="text"
               placeholder=" Pesquisar..."
               value={pesquisa}
-              onChange={(e) => setPesquisa(e.target.value)} // Atualiza o estado de pesquisa
+              onChange={(e) => setPesquisa(e.target.value)}
               className="w-64 border border-gray-300 p-2 text-sm rounded-md outline-none focus:border-amber-600"
             />
             <button
-              onClick={filtrarServicos} // Chama a função de filtro
+              onClick={filtrarServicos}
               className="p-2 bg-amber-600 rounded-md text-white hover:bg-amber-700"
             >
               <i className="bi bi-search"></i>
@@ -165,7 +174,7 @@ const Serviços = () => {
         {/* GRID DE SERVIÇOS */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
           {servicosFiltrados.length === 0 ? (
-            <div className="col-span-full text-center text-gray-400 py-10">
+            <div className="col-span-full text-center text-gray-500 py-10">
               Nenhum serviço encontrado
             </div>
           ) : (
@@ -177,14 +186,14 @@ const Serviços = () => {
                   </div>
                   <div>
                     <p className="font-bold text-gray-800 leading-none mb-1">{servico.descricao}</p>
-                    <div className="flex gap-2 text-[10px] uppercase font-bold text-gray-400">
+                    <div className="flex gap-2 text-[10px] uppercase font-bold text-gray-500">
                       <span>{servico.duracao}</span>
                       <span>•</span>
-                      <span className="text-green-600">R$ {parseFloat(servico.valor).toFixed(2)}</span>
+                      <span className="text-green-600">R$ {parseFloat(servico.valor || 0).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
-                <button onClick={() => abrirEdicao(servico)} className="text-gray-400 hover:text-amber-600 p-2 transition-colors">
+                <button onClick={() => abrirEdicao(servico)} className="text-gray-500 hover:text-amber-600 p-2 transition-colors">
                   <i className="bi bi-pencil-square text-lg"></i>
                 </button>
               </div>
@@ -194,33 +203,34 @@ const Serviços = () => {
       </section>
 
       {/* MODAL ADICIONAR */}
-      {/* MODAL ADICIONAR */}
       {isModalAddServico && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          {/* Limitamos a altura do container principal aqui com max-h-[90vh] */}
           <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl flex flex-col max-h-[90vh]">
 
             {/* HEADER FIXO */}
-            <div className="p-6 pb-2 flex justify-between items-center border-b border-gray-50">
+            <div className="p-6 pb-2 flex justify-between items-center border-b border-gray-300">
               <div>
-                <h3 className="font-bold text-xl text-gray-800">Novo Serviço</h3>
-                <p className="text-xs text-gray-400">Preencha os detalhes abaixo.</p>
+                <h3 className="font-bold text-xl text-gray-800 uppercase">Novo Serviço</h3>
               </div>
-              <button onClick={() => setModalAddServico(false)} className="text-gray-400 hover:text-red-500 transition-colors">
+              <button onClick={() => setModalAddServico(false)} className="text-gray-500 hover:text-red-500 transition-colors">
                 <i className="bi bi-x-lg text-lg"></i>
               </button>
             </div>
 
-            {/* CONTEÚDO COM SCROLL (O segredo está aqui) */}
+            {/* CONTEÚDO COM SCROLL */}
             <div className="flex-1 overflow-y-auto p-6 pt-4 custom-scrollbar">
               <form className="flex flex-col gap-4">
 
                 {/* NOME E CATEGORIA */}
                 <div className="flex flex-col gap-1">
                   <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Nome do Serviço</label>
-                  <input type="text" value={descricao}
+                  <input 
+                    type="text" 
+                    value={descricao}
                     onChange={(e) => setDescricao(e.target.value)}
-                    placeholder="Ex: Progressiva Sem Formol" className="border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none transition-all" />
+                    placeholder="Ex: Progressiva Sem Formol" 
+                    className="border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none transition-all" 
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -228,14 +238,15 @@ const Serviços = () => {
                   <div className="flex flex-col gap-1">
                     <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Categoria</label>
                     <select
-                      value={categoria} // Conecta ao estado `categoria`
-                      onChange={(e) => setCategoria(e.target.value)} // Atualiza o estado ao selecionar uma opção
+                      value={categoria}
+                      onChange={(e) => setCategoria(e.target.value)}
                       className="border border-gray-200 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-amber-500"
                     >
+                      <option value="">Selecione...</option>
                       <option value="Cabelo">Cabelo</option>
                       <option value="Barbearia">Barbearia</option>
                       <option value="Unhas">Unhas</option>
-                      <option value="Estetica facial">Estética facial</option>
+                      <option value="Estetic facial">Estética facial</option>
                       <option value="Depilação">Depilação</option>
                     </select>
                   </div>
@@ -244,33 +255,36 @@ const Serviços = () => {
                   <div className="flex flex-col gap-1">
                     <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Duração</label>
                     <select
-                      value={duracao} // Conecta ao estado `duracao`
-                      onChange={(e) => setDuracao(e.target.value)} // Atualiza o estado ao selecionar uma opção
+                      value={duracao}
+                      onChange={(e) => setDuracao(e.target.value)}
                       className="border border-gray-200 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-amber-500"
                     >
+                      <option value="">Selecione...</option>
                       <option value="30 min">30 min</option>
                       <option value="60 min">60 min</option>
                       <option value="90 min">90 min</option>
                     </select>
                   </div>
-                  <div className="flex flex-col gap-1">
+
+                  <div className="flex flex-col gap-1 col-span-2">
                     <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Preço do Serviço</label>
                     <input
                       type="number"
                       value={valor}
-                      onChange={(e) => setValor(e.target.value)}
+                      onChange={(e) => {
+                        setValor(e.target.value);
+                        setPrecoServico(e.target.value);
+                      }}
                       className="w-full border p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-amber-500"
                       placeholder="0.00"
                     />
                   </div>
                 </div>
 
-
                 {/* FINANCEIRO */}
                 <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 flex flex-col gap-3">
                   <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Valor do Serviço (Simulação)</h4>
                   <div className="grid grid-cols-2 gap-3">
-
                     <div className="flex flex-col gap-1">
                       <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Comissão (%)</label>
                       <input
@@ -281,16 +295,16 @@ const Serviços = () => {
                         placeholder="Ex: 40"
                       />
                     </div>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Taxa de no-show</label>
-                    <input
-                      type="number"
-                      value={taxaNoShow}
-                      onChange={e => setTaxaNoShow(e.target.value)}
-                      className="border border-gray-200 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-red-400"
-                      placeholder="Valor cobrado em faltas"
-                    />
+                    <div className="flex flex-col gap-1">
+                      <label className='text-[10px] font-bold text-gray-500 uppercase ml-1'>Taxa de no-show</label>
+                      <input
+                        type="number"
+                        value={taxaNoShow}
+                        onChange={e => setTaxaNoShow(e.target.value)}
+                        className="border border-gray-200 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-amber-500"
+                        placeholder="Valor em faltas"
+                      />
+                    </div>
                   </div>
                   <div className="mt-2 p-3 bg-white rounded-lg border border-amber-200">
                     <div className="flex justify-between text-xs mb-1">
@@ -313,7 +327,7 @@ const Serviços = () => {
             </div>
 
             {/* FOOTER FIXO */}
-            <div className="p-6 border-t border-gray-50 flex gap-2 bg-gray-50 rounded-b-xl">
+            <div className="p-6 border-t border-gray-200 flex gap-2 bg-gray-50 rounded-b-xl">
               <button
                 type="button"
                 onClick={() => setModalAddServico(false)}
@@ -323,7 +337,7 @@ const Serviços = () => {
               </button>
               <button
                 type="button"
-                onClick={() => { salvarServico(); setModalAddServico(false) }}
+                onClick={() => { salvarServico(); setModalAddServico(false); }}
                 className="flex-[2] bg-amber-600 text-white font-bold py-2.5 rounded-lg hover:bg-amber-700 shadow-md transition-all"
               >
                 Salvar Serviço
@@ -337,10 +351,13 @@ const Serviços = () => {
       {isModalEditServico && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-bold text-xl">Editar - {servicoSelecionado?.descricao}</h3>
-              <button onClick={() => setModalEditServico(false)} className="text-gray-400 hover:text-red-500"><i className="bi bi-x-lg"></i></button>
+            <div className="flex justify-between items-center mb-4 border-b border-gray-300 pb-3">
+              <h3 className="font-bold text-lg text-gray-800 uppercase">Editar - {servicoSelecionado?.descricao}</h3>
+              <button onClick={() => setModalEditServico(false)} className="text-gray-500 hover:text-red-500">
+                <i className="bi bi-x-lg"></i>
+              </button>
             </div>
+            
             <form className="flex flex-col gap-3">
               <label className='text-xs font-bold text-gray-400 uppercase'>Nome do Serviço</label>
               <input
