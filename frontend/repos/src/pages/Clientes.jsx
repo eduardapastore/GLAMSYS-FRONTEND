@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast';
 import Navbar from '../../components/Navbar';
 
 
@@ -8,9 +8,9 @@ const Clientes = () => {
 
   // DUMMY DATA
   const dummyClientes = [
-    { id: 1, nome: "Fulano de Tal", email: "fulano@email.com", proximoagendamento: "15/09", aniversario: "2000-05-20", telefone: "75999036694", pontos_fidelidade: 1, ticketmedio: 60.00, ultimoservico: "Corte de Cabelo", dataultimoservico: "10/09", observacoes: "Cliente frequente.", precaucoes: "Alergia a amônia.", curvatura: "1", cordofio: "Preto", tipodepele: "seca", tomdepele: "Claro" },
-    { id: 2, nome: "Jojo Todynho", email: "jojo@email.com", proximoagendamento: "20/09", aniversario: "1997-08-15", telefone: "75988888888", pontos_fidelidade: 4, ticketmedio: 35.00, ultimoservico: "Pintura de Unhas", dataultimoservico: "05/09", observacoes: "Interessada em tratamentos.", precaucoes: "Nenhuma.", curvatura: "4", cordofio: "Castanho", tipodepele: "oleosa", tomdepele: "Escuro" },
-    { id: 3, nome: "Carla Silva", email: "maria@email.com", proximoagendamento: "25/09", aniversario: "1995-12-10", telefone: "75977777777", pontos_fidelidade: 5, ticketmedio: 45.00, ultimoservico: "Massagem", dataultimoservico: "01/09", observacoes: "Cliente fiel.", precaucoes: "Nenhuma.", curvatura: "2", cordofio: "Loiro", tipodepele: "normal", tomdepele: "Claro" },
+    { id: 1, nome_razao: "Fulano de Tal", email: "fulano@email.com", proximoagendamento: "15/09", data_nascimento: "2000-05-20", telefone: "75999036694", pontos_fidelidade: 1, ticketmedio: 60.00, ultimoservico: "Corte de Cabelo", dataultimoservico: "10/09", observacoes: "Cliente frequente.", precaucoes: "Alergia a amônia.", curvatura_cabelo: "1", cordofio: "Preto", tipo_pele: "seca" },
+    { id: 2, nome_razao: "Jojo Todynho", email: "jojo@email.com", proximoagendamento: "20/09", data_nascimento: "1997-08-15", telefone: "75988888888", pontos_fidelidade: 4, ticketmedio: 35.00, ultimoservico: "Pintura de Unhas", dataultimoservico: "05/09", observacoes: "Interessada em tratamentos.", precaucoes: "Nenhuma.", curvatura_cabelo: "4", cordofio: "Castanho", tipo_pele: "oleosa" },
+    { id: 3, nome_razao: "Carla Silva", email: "maria@email.com", proximoagendamento: "25/09", data_nascimento: "1995-12-10", telefone: "75977777777", pontos_fidelidade: 5, ticketmedio: 45.00, ultimoservico: "Massagem", dataultimoservico: "01/09", observacoes: "Cliente fiel.", precaucoes: "Nenhuma.", curvatura_cabelo: "2", cordofio: "Loiro", tipo_pele: "normal" },
   ];
 
   // MODAL CLIENTES
@@ -22,45 +22,124 @@ const Clientes = () => {
   // ESTADOS DOS CAMPOS DO FORMULÁRIO (Usados tanto para Add quanto Edit se preferir, ou apenas Edit)
   const [editNome, setEditNome] = useState('');
   const [editEmail, setEditEmail] = useState('');
-  const [editAniversario, setEditAniversario] = useState('');
+  const [editDataNascimento, setEditDataNascimento] = useState('');
   const [editTelefone, setEditTelefone] = useState('');
   const [editCurvatura, setEditCurvatura] = useState('');
   const [editCordofio, setEditCordofio] = useState('');
   const [editTipodepele, setEditTipodepele] = useState('');
-  const [editTomdepele, setEditTomdepele] = useState('');
+
 
   // FUNÇÃO PARA ABRIR EDIÇÃO
   const abrirModalEdicao = (c) => {
     setItemEditando(c);
-    setEditNome(c.nome || '');
+
+    setEditNome(c.nome_razao || '');
     setEditEmail(c.email || '');
-    setEditAniversario(c.aniversario || '');
+    setEditDataNascimento(c.data_nascimento || '');
     setEditTelefone(c.telefone || '');
-    setEditCurvatura(c.curvatura || '');
+    setEditCurvatura(c.curvatura_cabelo || '');
     setEditCordofio(c.cordofio || '');
-    setEditTipodepele(c.tipodepele || '');
-    setEditTomdepele(c.tomdepele || '');
+    setEditTipodepele(c.tipo_pele || '');
+
     setisModalEditCliente(true);
   };
+  const [aniversariantesHoje, setAniversariantesHoje] = useState(0);
 
-  const salvarEdicao = async () => {
-    const dadosAtualizados = {
-      nome: editNome,
-      email: editEmail,
-      aniversario: editAniversario,
-      telefone: editTelefone,
-      curvatura: editCurvatura,
-      cordofio: editCordofio,
-      tipodepele: editTipodepele,
-      tomdepele: editTomdepele
+  useEffect(() => {
+
+    axios.get('http://localhost:3000/cliente/aniversariantes-hoje')
+      .then(response => {
+        setAniversariantesHoje(response.data.total);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+  }, []);
+
+  const [clientesNovosMes, setClientesNovosMes] = useState(0);
+
+  useEffect(() => {
+
+    axios.get('http://localhost:3000/cliente/novos-mes')
+      .then(response => {
+        setClientesNovosMes(response.data.total);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+  }, []);
+
+  const [novoNome, setNovoNome] = useState('');
+  const [novoEmail, setNovoEmail] = useState('');
+  const [novoTelefone, setNovoTelefone] = useState('');
+  const [novoDocumento, setNovoDocumento] = useState('');
+  const [novaDataNascimento, setNovaDataNascimento] = useState('');
+  const [novaCurvatura, setNovaCurvatura] = useState('');
+  const [novoTipoPele, setNovoTipoPele] = useState('');
+
+  const salvarCliente = async () => {
+    const novoCliente = {
+      documento: novoDocumento,
+      nome_razao: novoNome,
+      email: novoEmail,
+      telefone: novoTelefone,
+      pontos_fidelidade: 0,
+      data_nascimento: novaDataNascimento,
+      curvatura_cabelo: novaCurvatura,
+      tipo_pele: novoTipoPele
     };
 
     try {
-      // await axios.put(`http://localhost:3000/clientes/${itemEditando.id}`, dadosAtualizados);
+      const response = await axios.post(
+        "http://localhost:3000/cliente",
+        novoCliente
+      );
+
+      console.log("Cliente criado:", response.data);
+
+      toast.success("Cliente cadastrado com sucesso!");
+
+      await carregarClientes();
+
+      setisModalAddCliente(false);
+
+      setNovoNome('');
+      setNovoEmail('');
+      setNovoTelefone('');
+      setNovoDocumento('');
+      setNovaDataNascimento('');
+      setNovaCurvatura('');
+      setNovoTipoPele('');
+
+    } catch (error) {
+      console.error(error.response?.data || error);
+
+      toast.error(
+        error.response?.data?.error ||
+        "Erro ao cadastrar cliente"
+      );
+    }
+  };
+
+
+  const salvarEdicao = async () => {
+    const dadosAtualizados = {
+      nome_razao: editNome,
+      email: editEmail,
+      data_nascimento: editDataNascimento,
+      telefone: editTelefone,
+      curvatura_cabelo: editCurvatura,
+      cordofio: editCordofio,
+      tipo_pele: editTipodepele
+    };
+
+    try {
+      await axios.put(`http://localhost:3000/cliente/${itemEditando.id}`, dadosAtualizados);
       console.log("Enviando atualização:", dadosAtualizados);
       toast.success("Cliente atualizado com sucesso!");
       setisModalEditCliente(false);
-      // carregarDados(); // Sua função de refresh
     } catch (error) {
       toast.error("Erro ao atualizar!");
     }
@@ -80,20 +159,20 @@ const Clientes = () => {
   // MENSAGENS PARA WHATSAPP
   // MENSAGENS PARA WHATSAPP - Use CRASES (tecla ao lado da letra P no teclado ABNT)
   const MENSAGENS_STATUS = {
-    "VIP": (nome) => `Olá, ${nome}! Passando para agradecer por ser uma de nossas clientes mais especiais. 🌟 Preparamos um mimo exclusivo para sua próxima visita. Vamos agendar seu horário?`,
+    "VIP": (nome_razao) => `Olá, ${nome_razao}! Passando para agradecer por ser uma de nossas clientes mais especiais. 🌟 Preparamos um mimo exclusivo para sua próxima visita. Vamos agendar seu horário?`,
 
-    "EM RISCO": (nome) => `Oi, ${nome}! Sentimos sua falta! 💔 Faz um tempinho que não cuidamos de você! Que tal um desconto de 15% para renovarmos seu visual esta semana?`,
+    "EM RISCO": (nome_razao) => `Oi, ${nome_razao}! Sentimos sua falta! 💔 Faz um tempinho que não cuidamos de você! Que tal um desconto de 15% para renovarmos seu visual esta semana?`,
 
-    "FIDELIDADE ATIVA": (nome) => `Olá, ${nome}! Você está pontuando muito bem no nosso programa de fidelidade! Falta apenas mais uma visita para você ganhar seu brinde. Vamos completar? 🎁`,
+    "FIDELIDADE ATIVA": (nome_razao) => `Olá, ${nome_razao}! Você está pontuando muito bem no nosso programa de fidelidade! Falta apenas mais uma visita para você ganhar seu brinde. Vamos completar? 🎁`,
 
-    "CLIENTE NOVO": (nome) => `Seja bem-vinda(o), ${nome}! Ficamos muito felizes com sua primeira visita. 🌸 Como foi sua experiência? Adoraríamos receber seu feedback!`,
+    "CLIENTE NOVO": (nome_razao) => `Seja bem-vinda(o), ${nome_razao}! Ficamos muito felizes com sua primeira visita. 🌸 Como foi sua experiência? Adoraríamos receber seu feedback!`,
 
-    "DEFAULT": (nome) => `Olá, ${nome}! Como você está? Passando para desejar um ótimo dia!`
+    "DEFAULT": (nome_razao) => `Olá, ${nome_razao}! Como você está? Passando para desejar um ótimo dia!`
   };
   const dispararWhatsApp = (cliente) => {
     // 1. Seleciona a mensagem baseada no status
     const template = MENSAGENS_STATUS[cliente.status_fidelidade] || MENSAGENS_STATUS["DEFAULT"];
-    const mensagemTexto = template(cliente.nome);
+    const mensagemTexto = template(cliente.nome_razao);
 
     // 2. Limpa o telefone (deixa só números)
     // Se o número vier como "71999999999", ele apenas garante que não haja espaços ou parênteses
@@ -107,7 +186,19 @@ const Clientes = () => {
   };
 
   const [clientes, setClientes] = useState([]);
+  const [pesquisa, setPesquisa] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const clientesFiltrados = clientes.filter((cliente) => {
+    const termo = pesquisa.toLowerCase();
+
+    return (
+      cliente.nome_razao?.toLowerCase().includes(termo) ||
+      cliente.email?.toLowerCase().includes(termo) ||
+      cliente.telefone?.includes(termo) ||
+      cliente.documento?.includes(termo)
+    );
+  });
 
   const carregarClientes = async () => {
     try {
@@ -140,6 +231,16 @@ const Clientes = () => {
       console.error(error);
     }
   };
+  const [quantidade, setQuantidade] = useState(0);
+  useEffect(() => {
+    axios.get('http://localhost:3000/cliente/quantidade')
+      .then(response => {
+        setQuantidade(response.data.total);
+      })
+      .catch(error => {
+        console.log("Erro:", error);
+      });
+  }, []);
 
   return (
     <main className="w-screen flex h-screen overflow-x-hidden">
@@ -169,7 +270,7 @@ const Clientes = () => {
             <i class="bi bi-people text-xl"></i>
             <div>
               <p className='font-semibold'>Total de Clientes</p>
-              <p className='text-base font-light'>10</p>
+              <p className='text-base font-light'>{quantidade}</p>
             </div>
           </div>
 
@@ -177,7 +278,9 @@ const Clientes = () => {
             <i className="bi bi-person-add text-xl"></i>
             <div>
               <p className='font-semibold'>Clientes Novos no Mês</p>
-              <p className='text-base font-light'>10</p>
+              <p className='text-base font-light'>
+                {clientesNovosMes}
+              </p>
             </div>
           </div>
 
@@ -185,7 +288,9 @@ const Clientes = () => {
             <i class="bi bi-cake2 text-xl"></i>
             <div>
               <p className='font-semibold'>Aniversariantes do Dia</p>
-              <p className='text-base font-light'>9</p>
+              <p className='text-base font-light'>
+                {aniversariantesHoje}
+              </p>
             </div>
           </div>
 
@@ -203,7 +308,10 @@ const Clientes = () => {
           <h2 className="text-gray-500 font-semibold mb-2 uppercase mt-4">Listagem de Clientes</h2>
           <div className="flex gap-2 items-center">
             <input
-              type="text" placeholder=" Pesquisar..."
+              type="text"
+              placeholder="Pesquisar nome, email, CPF ou telefone..."
+              value={pesquisa}
+              onChange={(e) => setPesquisa(e.target.value)}
               className="w-64 border p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
             />
             <button className="p-1 w-8 h-8 items-center font-bold bg-amber-600 rounded-md text-white hover:bg-amber-700 transition-all">
@@ -212,8 +320,8 @@ const Clientes = () => {
           </div>
         </div>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-          {clientes.length > 0 ? (
-            clientes.map(c => (
+          {clientesFiltrados.length > 0 ? (
+            clientesFiltrados.map(c => (
               <button>
                 <div key={c.id} className="p-4 flex justify-between items-center bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                   <button
@@ -257,7 +365,9 @@ const Clientes = () => {
               </button>
             ))
           ) : (
-            <p className="text-gray-400 italic">Nenhum cliente encontrado.</p>
+            <p className="text-gray-400 italic">
+              Nenhum cliente encontrado para "{pesquisa}".
+            </p>
           )}
         </div>
       </div>
@@ -386,40 +496,66 @@ const Clientes = () => {
             <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
               <div className='mb-0'>
                 <label className="text-[10px] font-bold text-gray-500 uppercase">NOME</label>
-                <input className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                <input
+                  value={novoNome}
+                  onChange={(e) => setNovoNome(e.target.value)}
+                  className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600"
+                />
               </div>
 
               <div className='flex flex-col md:flex-row gap-3'>
                 <div className='w-full'>
                   <label className="text-[10px] font-bold text-gray-500 uppercase">EMAIL</label>
-                  <input className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                  <input
+                    value={novoEmail}
+                    onChange={(e) => setNovoEmail(e.target.value)}
+                    className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600"
+                  />
                 </div>
                 <div className='w-full'>
                   <label className="text-[10px] font-bold text-gray-500 uppercase">DATA DE NASCIMENTO</label>
-                  <input type='date' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                  <input
+                    type="date"
+                    value={novaDataNascimento}
+                    onChange={(e) => setNovaDataNascimento(e.target.value)}
+                    className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600"
+                  />
                 </div>
               </div>
 
               <div className='flex flex-col md:flex-row gap-3'>
                 <div className='w-full'>
                   <label className="text-[10px] font-bold text-gray-500 uppercase">TELEFONE</label>
-                  <input className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                  <input
+                    value={novoTelefone}
+                    onChange={(e) => setNovoTelefone(e.target.value)}
+                    className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600"
+                  />
                 </div>
                 <div className='w-full'>
                   <label className="text-[10px] font-bold text-gray-500 uppercase">CPF</label>
-                  <input type='text' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                  <input
+                    value={novoDocumento}
+                    onChange={(e) => setNovoDocumento(e.target.value)}
+                    type="text"
+                    className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600"
+                  />
                 </div>
               </div>
 
               <div className='flex flex-col md:flex-row gap-3'>
                 <div className='w-full'>
                   <label className="text-[10px] font-bold text-gray-500 uppercase">CURVATURA DO FIO</label>
-                  <select className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" >
+                  <select
+                    value={novaCurvatura}
+                    onChange={(e) => setNovaCurvatura(e.target.value)}
+                    className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600"
+                  >
                     <option value="">Selecione</option>
-                    <option value="1">1A, 1B, 1C</option>
-                    <option value="2">2A, 2B, 2C</option>
-                    <option value="3">3A, 3B, 3C</option>
-                    <option value="4">4A, 4B, 4C</option>
+                    <option value="1A-1C (Liso)">1A-1C (Liso)</option>
+                    <option value="2A-2C (Ondulado)">2A-2C (Ondulado)</option>
+                    <option value="3A-3C (Cacheado)">3A-3C (Cacheado)</option>
+                    <option value="4A-4C (Crespo)">4A-4C (Crespo)</option>
                   </select>
                 </div>
                 <div className='w-full'>
@@ -431,23 +567,26 @@ const Clientes = () => {
               <div className='flex flex-col md:flex-row gap-3'>
                 <div className='w-full'>
                   <label className="text-[10px] font-bold text-gray-500 uppercase">TIPO DE PELE</label>
-                  <select className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" >
+                  <select
+                    value={novoTipoPele}
+                    onChange={(e) => setNovoTipoPele(e.target.value)}
+                    className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600"
+                  >
                     <option value="">Selecione</option>
                     <option value="seca">Seca</option>
                     <option value="mista">Mista</option>
                     <option value="oleosa">Oleosa</option>
                   </select>
                 </div>
-                <div className='w-full'>
-                  <label className="text-[10px] font-bold text-gray-500 uppercase">TOM DE PELE</label>
-                  <input type='text' className="w-full border border-gray-300 p-2 rounded-md text-sm outline-none focus:border-amber-600" />
-                </div>
               </div>
             </div>
 
             {/* FOOTER - Fica fixo na base do modal */}
             <div className="p-6 border-t bg-amber-50">
-              <button className="w-full bg-green-600 text-white py-2 rounded-md font-bold hover:bg-green-700 shadow-md">
+              <button
+                onClick={salvarCliente}
+                className="w-full bg-green-600 text-white py-2 rounded-md font-bold hover:bg-green-700 shadow-md"
+              >
                 Salvar Cliente
               </button>
             </div>
@@ -478,7 +617,7 @@ const Clientes = () => {
                 </div>
                 <div className='w-full'>
                   <label className="text-[10px] font-bold text-gray-500 uppercase">Data de Nascimento</label>
-                  <input type='date' value={editAniversario} onChange={(e) => setEditAniversario(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
+                  <input type='date' value={editDataNascimento} onChange={(e) => setEditDataNascimento(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
                 </div>
               </div>
 
@@ -497,10 +636,10 @@ const Clientes = () => {
                 <div className='w-full'>
                   <label className="text-[10px] font-bold text-gray-500 uppercase">Curvatura</label>
                   <select value={editCurvatura} onChange={(e) => setEditCurvatura(e.target.value)} className="w-full border p-2 rounded-md text-sm outline-none focus:border-amber-600">
-                    <option value="1">1A-1C (Liso)</option>
-                    <option value="2">2A-2C (Ondulado)</option>
-                    <option value="3">3A-3C (Cacheado)</option>
-                    <option value="4">4A-4C (Crespo)</option>
+                    <option value="1A-1C (Liso)">1A-1C (Liso)</option>
+                    <option value="2A-2C (Ondulado)">2A-2C (Ondulado)</option>
+                    <option value="3A-3C (Cacheado)">3A-3C (Cacheado)</option>
+                    <option value="4A-4C (Crespo)">4A-4C (Crespo)</option>
                   </select>
                 </div>
                 <div className='w-full'>
