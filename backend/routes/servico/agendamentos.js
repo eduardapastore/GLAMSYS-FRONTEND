@@ -177,5 +177,7 @@ router.get('/cliente/:id/resumo', async (req, res) => {
   }
 });
 
+
+
 module.exports = router;
 

@@ -1,33 +1,67 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios';
 
 const Confirmacoes = () => {
     const [eventos, setEventos] = useState([]);
     const [modalAberto, setModalAberto] = useState(false);
     const [ordemSelecionada, setOrdemSelecionada] = useState(null);
     const [filtroStatus, setFiltroStatus] = useState('TODOS');
+    const [ordens, setOrdens] = useState([]);
 
     const dummyOrdens = [
         { id: 1, cliente_nome: "Ana Silva", servico_nome: "Corte e Escova", data_agendamento: "2026-04-20", status: "PENDENTE", valor: 120.00, hora: "14:00" },
         { id: 2, cliente_nome: "Marcos Viana", servico_nome: "Barba e Cabelo", data_agendamento: "2026-04-20", status: "REALIZADO", valor: 85.00, hora: "15:30" },
         { id: 3, cliente_nome: "Juliana Costa", servico_nome: "Manicure", data_agendamento: "2026-04-21", status: "PENDENTE", valor: 50.00, hora: "09:00" },
     ];
-
     useEffect(() => {
-        carregarEventos();
+        carregarOrdens();
     }, []);
 
-    const carregarEventos = () => {
-        const dadosFormatados = dummyOrdens.map(os => ({
-            id: os.id,
-            title: `${os.cliente_nome} - ${os.servico_nome}`, 
-            start: os.data_agendamento, 
-            backgroundColor: os.status === 'REALIZADO' ? '#10b981' : '#f59e0b',
-            borderColor: 'transparent',
-            extendedProps: { ...os }
-        }));
-        setEventos(dadosFormatados);
+    const carregarOrdens = async () => {
+        try {
+
+            const response = await axios.get(
+                'http://localhost:3000/ordens_servico'
+            );
+
+            const dados = response.data.map(item => ({
+
+                id: item.id,
+
+                cliente_nome: item.cliente_nome,
+
+                servico_nome: item.procedimento,
+
+                data_agendamento: item.data_agendamento
+                    ? new Date(item.data_agendamento)
+                        .toLocaleDateString('pt-BR')
+                    : '-',
+
+                hora: item.hora_agendamento
+                    ? item.hora_agendamento.substring(0, 5)
+                    : '-',
+
+                valor: Number(item.valor || 0),
+
+                status:
+                    item.status === 'ABERTA'
+                        ? 'PENDENTE'
+                        : item.status === 'FECHADA'
+                            ? 'REALIZADO'
+                            : 'CANCELADO'
+            }));
+
+            setOrdens(dados);
+
+        } catch (error) {
+
+            console.error(error);
+
+            toast.error('Erro ao carregar confirmações');
+
+        }
     };
 
     // FUNÇÃO CHAMADA AO CLICAR NO EVENTO
@@ -39,68 +73,74 @@ const Confirmacoes = () => {
     const confirmarPagamento = () => {
         toast.success(`Pagamento de ${ordemSelecionada.cliente_nome} confirmado!`);
         setModalAberto(false);
-        
+
     };
 
     const ordensFiltradas =
-    filtroStatus === 'TODOS'
-        ? dummyOrdens
-        : dummyOrdens.filter(
-              (ordem) => ordem.status === filtroStatus
-          );
+        filtroStatus === 'TODOS'
+            ? ordens
+            : ordens.filter(
+                ordem => ordem.status === filtroStatus
+            );
 
     return (
         <main className="w-screen flex h-screen overflow-hidden ">
             <Navbar />
             <Toaster position="top-right" />
-            
+
             <section className="p-6 flex-1 h-full overflow-y-auto flex flex-col gap-4">
                 <div className='flex justify-between items-center'>
                     <h2 className='font-bold text-2xl text-gray-800'>Confirmações</h2>
                     <div className="flex gap-2">
-                        <input 
-                        type="text" placeholder=" Pesquisar..." 
-                        className="w-64 border p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
+                        <input
+                            type="text" placeholder=" Pesquisar..."
+                            className="w-64 border p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
                         />
                         <button className="p-2 w-10 h-10 bg-amber-600 rounded-md text-white hover:bg-amber-700 transition-all">
-                        <i className="bi bi-search"></i>
+                            <i className="bi bi-search"></i>
                         </button>
                     </div>
                 </div>
 
-                 <div className="flex gap-2 mt-4">
-                        <button
-                            onClick={() => setFiltroStatus('TODOS')}
-                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                                filtroStatus === 'TODOS'
-                                    ? 'bg-amber-600 text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                <div className="flex gap-2 mt-4">
+                    <button
+                        onClick={() => setFiltroStatus('TODOS')}
+                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filtroStatus === 'TODOS'
+                            ? 'bg-amber-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
-                        >
-                            Todos
-                        </button>
+                    >
+                        Todos
+                    </button>
 
-                        <button
-                            onClick={() => setFiltroStatus('PENDENTE')}
-                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                                filtroStatus === 'PENDENTE'
-                                    ? 'bg-amber-600 text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    <button
+                        onClick={() => setFiltroStatus('PENDENTE')}
+                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filtroStatus === 'PENDENTE'
+                            ? 'bg-amber-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
-                        >
-                            Pendentes
-                        </button>
+                    >
+                        Pendentes
+                    </button>
 
-                        <button
-                            onClick={() => setFiltroStatus('REALIZADO')}
-                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                                filtroStatus === 'REALIZADO'
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    <button
+                        onClick={() => setFiltroStatus('REALIZADO')}
+                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filtroStatus === 'REALIZADO'
+                            ? 'bg-green-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
-                        >
-                            Realizados
-                        </button>
+                    >
+                        Realizados
+                    </button>
+                    <button
+                        onClick={() => setFiltroStatus('CANCELADO')}
+                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filtroStatus === 'CANCELADO'
+                            ? 'bg-red-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                    >
+                        Cancelados
+                    </button>
                 </div>
 
                 {/* CARDS DE AGENDAMENTOS */}
@@ -120,11 +160,12 @@ const Confirmacoes = () => {
                                 </h3>
 
                                 <span
-                                    className={`text-xs font-bold px-3 py-1 rounded-full ${
-                                        ordem.status === "REALIZADO"
-                                            ? "bg-green-100 text-green-700"
+                                    className={`text-xs font-bold px-3 py-1 rounded-full ${ordem.status === "REALIZADO"
+                                        ? "bg-green-100 text-green-700"
+                                        : ordem.status === "CANCELADO"
+                                            ? "bg-red-100 text-red-700"
                                             : "bg-amber-100 text-amber-700"
-                                    }`}
+                                        }`}
                                 >
                                     {ordem.status}
                                 </span>
@@ -155,7 +196,12 @@ const Confirmacoes = () => {
             {modalAberto && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[999] p-4 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
-                        <div className={`p-4 ${ordemSelecionada.status === 'REALIZADO' ? 'bg-green-600' : 'bg-amber-500'} text-white`}>
+                        <div className={`p-4 ${ordemSelecionada.status === 'REALIZADO'
+                            ? 'bg-green-600'
+                            : ordemSelecionada.status === 'CANCELADO'
+                                ? 'bg-red-600'
+                                : 'bg-amber-500'
+                            } text-white`}>
                             <div className="flex justify-between items-start">
                                 <div>
                                     <p className="text-xs opacity-80 uppercase font-bold">Detalhes do Agendamento</p>
@@ -190,8 +236,8 @@ const Confirmacoes = () => {
                             </div>
 
                             <div className="flex gap-2 mt-4">
-                                {ordemSelecionada.status !== 'REALIZADO' && (
-                                    <button 
+                                {ordemSelecionada.status === 'PENDENTE' && (
+                                    <button
                                         onClick={confirmarPagamento}
                                         className="flex-1 py-3 text-lg bg-green-600 hover:bg-green-700 text-white font-bold px-3 rounded-xl transition-all shadow-lg shadow-green-100"
                                     >

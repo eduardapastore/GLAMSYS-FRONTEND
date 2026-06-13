@@ -43,6 +43,21 @@ const Clientes = () => {
 
     setisModalEditCliente(true);
   };
+
+  const [servicoMaisContratado, setServicoMaisContratado] = useState('');
+
+  useEffect(() => {
+
+    axios.get('http://localhost:3000/cliente/servico-mais-contratado')
+      .then(response => {
+        setServicoMaisContratado(response.data.descricao);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+  }, []);
+
   const [aniversariantesHoje, setAniversariantesHoje] = useState(0);
 
   useEffect(() => {
@@ -298,7 +313,9 @@ const Clientes = () => {
             <i class="bi bi-bag-heart text-xl"></i>
             <div>
               <p className='font-semibold'>Serviço Mais Contratado</p>
-              <p className='text-base font-light'>Tratamento de Hidratação</p>
+              <p className='text-base font-light'>
+                {servicoMaisContratado || 'Carregando...'}
+              </p>
             </div>
           </div>
         </div>

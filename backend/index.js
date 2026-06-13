@@ -36,6 +36,8 @@ const PagcolabRoutes = require('./routes/RH/pagColaboradores');
 app.use('/pagColaboradores', PagcolabRoutes);
 const colabServRoutes = require('./routes/RH/colaborador_servico');
 app.use('/colaborador_servico', colabServRoutes);
+const dashboardRoutes = require('./routes/RH/dashboard');
+app.use('/dashboard', dashboardRoutes);
 
 
 

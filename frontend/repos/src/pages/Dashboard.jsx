@@ -5,75 +5,103 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, CartesianGrid } from "recharts";
 import axios from 'axios';
 
+import { number } from 'framer-motion';
+
 const Dashboard = () => {
-  const [agendamentos, setAgendamentos] = useState([]);
-  const hoje = new Date().toISOString().split('T')[0];
 
-  useEffect(() => {
-    axios.get('http://localhost:3000/agendamentos/detalhes2')
-      .then((res) => {
-        setAgendamentos(res.data.map(item => ({
-          id: String(item.id),
-          title: `${item.nome_cliente || item.nome || 'Agendamento'} (${item.horario?.slice(0, 5)})`,
-          start: item.data ? item.data.split('T')[0] : hoje,
-          rawDate: item.data,
-          entrada: item.entrada || Math.floor(Math.random() * 100) + 50,
-          saida: item.saida || Math.floor(Math.random() * 30) + 5
-        })));
-      })
-      .catch(() => setAgendamentos([
-        { id: '1', title: 'Ev. Macedo (09:00)', start: hoje, rawDate: hoje, entrada: 150, saida: 30 },
-        { id: '2', title: 'C. Fausto (10:30)', start: hoje, rawDate: hoje, entrada: 50, saida: 10 },
-        { id: '3', title: 'M. Costa (14:00)', start: hoje, rawDate: hoje, entrada: 80, saida: 15 },
-      ]));
-  }, []);
 
-  let totalEntradas = 0, totalSaidas = 0;
-  const financeiroPorMes = {};
 
-  agendamentos.forEach(item => {
-    const mes = new Date(item.rawDate || item.start).toLocaleString("pt-BR", { month: "short" }).toUpperCase();
-    if (mes !== "INVALID DATE") {
-      if (!financeiroPorMes[mes]) financeiroPorMes[mes] = { entradas: 0, saidas: 0 };
-      financeiroPorMes[mes].entradas += Number(item.entrada || 0);
-      financeiroPorMes[mes].saidas += Number(item.saida || 0);
-      totalEntradas += Number(item.entrada || 0);
-      totalSaidas += Number(item.saida || 0);
-    }
+  const [totalClientes, setTotalClientes] = useState(0);
+
+  const [totalAgendamentosHoje, setTotalAgendamentosHoje] = useState(0);
+  
+  const [servicoMaisContratado, setServicoMaisContratado] = useState('');
+  
+  const [funcionarioMes, setFuncionarioMes] = useState('');
+  
+  const [fluxoCaixa, setFluxoCaixa] = useState({
+    entradas: 0,
+    saidas: 0,
+    saldo: 0
   });
+  
+  const [chartData, setChartData] = useState([]);
+  
+  const [agendamentosHoje, setAgendamentosHoje] = useState([]);
+  
+  useEffect(() => {
 
-  const chartData = Object.keys(financeiroPorMes).map(mes => ({
-    name: mes,
-    entradas: financeiroPorMes[mes].entradas,
-    saidas: financeiroPorMes[mes].saidas
-  }));
-
-  const agendamentosHoje = [
-  {
-    id: 1,
-    cliente: "Maria Silva",
-    servico: "Corte Feminino",
-    horario: "09:00"
-  },
-  {
-    id: 2,
-    cliente: "João Santos",
-    servico: "Barba",
-    horario: "10:30"
-  },
-  {
-    id: 3,
-    cliente: "Ana Costa",
-    servico: "Escova",
-    horario: "13:00"
-  },
-  {
-    id: 4,
-    cliente: "Carlos Oliveira",
-    servico: "Corte e Barba",
-    horario: "15:00"
-  }
-];
+    carregarDashboard();
+  
+  }, []);
+  
+  const carregarDashboard = async () => {
+  
+    try {
+  
+      const [
+        clientes,
+        agendamentos,
+        servico,
+        funcionario,
+        fluxo,
+        grafico,
+        listaAgendamentos
+      ] = await Promise.all([
+  
+        axios.get('http://localhost:3000/cliente/quantidade'),
+  
+        axios.get('http://localhost:3000/dashboard/agendamentos-hoje'),
+  
+        axios.get('http://localhost:3000/dashboard/servico-mais-contratado-mes'),
+  
+        axios.get('http://localhost:3000/dashboard/funcionario-mes'),
+  
+        axios.get('http://localhost:3000/dashboard/fluxo-caixa'),
+  
+        axios.get('http://localhost:3000/dashboard/fluxo-caixa-grafico'),
+  
+        axios.get('http://localhost:3000/dashboard/agendamentos-dia')
+  
+      ]);
+  
+      setTotalClientes(clientes.data.total);
+  
+      setTotalAgendamentosHoje(
+        agendamentos.data.total
+      );
+  
+      setServicoMaisContratado(
+        servico.data.descricao
+      );
+  
+      setFuncionarioMes(
+        funcionario.data.nome
+      );
+  
+      setFluxoCaixa(
+        fluxo.data
+      );
+  
+      setChartData(
+        grafico.data.map(item => ({
+          name: item.mes,
+          entradas: Number(item.entradas),
+          saidas: Number(item.saidas)
+        }))
+      );
+  
+      setAgendamentosHoje(
+        listaAgendamentos.data
+      );
+  
+    } catch (error) {
+  
+      console.error(error);
+  
+    }
+  
+  };
 
   return (
     <div className='w-screen flex h-screen overflow-hidden bg-transparent'>
@@ -81,20 +109,16 @@ const Dashboard = () => {
       <main className='p-6 w-full h-full overflow-y-auto flex flex-col gap-6'>
         
         {/* TOPO */}
-        <div className='flex justify-between items-center'>
-          <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
-          <div className="flex gap-2">
-            <input type="text" placeholder=" Pesquisar..." className="w-64 border p-2 rounded-md text-sm outline-none focus:border-amber-600" />
-            <button className="p-2 w-10 h-10 bg-amber-600 rounded-md text-white"><i className="bi bi-search"></i></button>
-          </div>
-        </div>
+        
 
         <div className='flex gap-2 items-center text-white justify-between'>
             <div className='flex gap-4 bg-gray-950 p-3 text-xs rounded-md items-center shadow-md'>
               <i className="bi bi-people text-xl"></i>
               <div>
                 <p className='font-semibold'>Total Clientes Cadastrados</p>
-                <p className='text-xs'>10</p>
+                <p className='text-xs'>
+  {totalClientes}
+</p>
               </div>
             </div>
 
@@ -102,7 +126,9 @@ const Dashboard = () => {
               <i class="bi bi-calendar-check-fill text-xl"></i>
               <div>
                 <p className='font-semibold'>Total de Agendamentos Hoje</p>
-                <p className='text-xs'>3</p>
+                <p className='text-xs'>
+  {totalAgendamentosHoje}
+</p>
               </div>
             </div>
 
@@ -110,7 +136,9 @@ const Dashboard = () => {
               <i class="bi bi-stars text-xl"></i>
               <div>
                 <p className='font-semibold'>Serviço mais contratado no mês</p>
-                <p className='text-xs'>Corte e Barba</p>
+                <p className='text-xs'>
+  {servicoMaisContratado}
+</p>
               </div>
             </div>
 
@@ -118,7 +146,9 @@ const Dashboard = () => {
               <i class="bi bi-person-arms-up text-xl"></i>
               <div>
                 <p className='font-semibold'>Funcionário do Mês</p>
-                <p className='text-xs'>Fulano de Tal</p>
+                <p className='text-xs'>
+  {funcionarioMes}
+</p>
               </div>
             </div>
 
@@ -156,16 +186,16 @@ const Dashboard = () => {
             <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-200 mt-2">
               <div className="bg-white/80 p-2 rounded-lg border border-emerald-100">
                 <span className="text-[10px] uppercase font-bold text-emerald-600 block">Entradas</span>
-                <span className="text-sm font-bold text-gray-800">R$ {totalEntradas.toFixed(2)}</span>
+                <span className="text-sm font-bold text-gray-800">R$ {Number(fluxoCaixa.entradas).toFixed(2)}</span>
               </div>
               <div className="bg-white/80 p-2 rounded-lg border border-red-100">
                 <span className="text-[10px] uppercase font-bold text-red-500 block">Saídas</span>
-                <span className="text-sm font-bold text-gray-800">R$ {totalSaidas.toFixed(2)}</span>
+                <span className="text-sm font-bold text-gray-800">R$ {Number(fluxoCaixa.saidas).toFixed(2)}</span>
               </div>
               <div className="bg-white/80 p-2 rounded-lg border border-amber-200">
                 <span className="text-[10px] uppercase font-bold text-amber-700 block">Saldo</span>
-                <span className={`text-sm font-bold ${(totalEntradas - totalSaidas) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                  R$ {(totalEntradas - totalSaidas).toFixed(2)}
+                <span className={`text-sm font-bold ${(fluxoCaixa.saldo) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                  R$ {Number(fluxoCaixa.saldo).toFixed(2)}
                 </span>
               </div>
             </div>
