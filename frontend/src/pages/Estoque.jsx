@@ -188,7 +188,7 @@ const Estoque = () => {
           <div className="flex gap-2">
             <input 
               type="text" placeholder=" Pesquisar..." 
-              className="w-64 border p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
+              className="w-64 p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
               value={search} onChange={(e) => setSearch(e.target.value)}
             />
             <button className="p-2 w-10 h-10 bg-amber-600 rounded-md text-white hover:bg-amber-700 transition-all" onClick={filtrar}>

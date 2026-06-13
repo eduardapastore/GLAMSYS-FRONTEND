@@ -13,6 +13,7 @@ import AddColaborador from './pages/AddColaborador';
 import Clientes from './pages/Clientes';
 import Serviços from './pages/Serviços';
 import FolhadePagamento from './pages/FolhadePagamento';
+import AIAssistant from './pages/AIAssistant';
 
 const Router = () => {
   return (
@@ -33,6 +34,7 @@ const Router = () => {
                 <Route path='/clientes' element={<Clientes />} />
                 <Route path='/servicos' element={<Serviços />} />
                 <Route path='/folhadepagamento' element={<FolhadePagamento />} />
+                <Route path='/assistenteia' element={<AIAssistant />} />
                 <Route path='*' element={<h1>404 - Página Não Encontrada</h1>} />
                 {/* Adiciona do mesmo jeito aqui outras páginas */}
             </Routes>

@@ -2,11 +2,14 @@
 export default {
   content: [
     "./index.html",
-    "./repos/src/**/*.{js,ts,jsx,tsx}",
-    "./repos/srcsite/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}", // <-- Muito importante se sua pasta components estiver fora de src!
   ],
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: {
+    '@tailwindcss/postcss': {},
+    autoprefixer: {},
+  },
 }

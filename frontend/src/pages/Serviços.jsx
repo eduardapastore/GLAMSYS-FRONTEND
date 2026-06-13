@@ -327,18 +327,11 @@ const Serviços = () => {
             </div>
 
             {/* FOOTER FIXO */}
-            <div className="p-6 border-t border-gray-200 flex gap-2 bg-gray-50 rounded-b-xl">
-              <button
-                type="button"
-                onClick={() => setModalAddServico(false)}
-                className="flex-1 py-2.5 text-gray-500 font-bold hover:bg-gray-200 rounded-lg transition-all"
-              >
-                Cancelar
-              </button>
+            <div className="p-6 w-full border-t border-gray-200 flex gap-2 bg-gray-50 rounded-b-xl">
               <button
                 type="button"
                 onClick={() => { salvarServico(); setModalAddServico(false); }}
-                className="flex-[2] bg-amber-600 text-white font-bold py-2.5 rounded-lg hover:bg-amber-700 shadow-md transition-all"
+                className="w-full flex gap-2 justify-center text-xl bg-green-600 text-white py-3 rounded-md font-bold hover:bg-green-700"
               >
                 Salvar Serviço
               </button>

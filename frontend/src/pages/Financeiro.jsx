@@ -187,10 +187,10 @@ const Financeiro = () => {
       <section className='p-6 w-full h-full flex flex-col'>
         <header className='flex justify-between items-center mb-6'>
           <div>
-            <h2 className='font-bold text-3xl text-gray-800 tracking-tight'>Financeiro</h2>
+            <h2 className='font-bold text-2xl text-gray-900'>Financeiro</h2>
           </div>
           <button
-            className='flex items-center gap-2 px-4 py-2 rounded-lg font-bold bg-amber-600 text-white hover:bg-amber-700 shadow-md transition-all'
+            className='p-2 text-sm rounded-md font-semibold bg-amber-600 text-amber-50 hover:bg-amber-700 flex items-center gap-1'
             onClick={() => setIsModalOpen(true)}
           >
             <i className="bi bi-plus-lg"></i> Novo Lançamento
