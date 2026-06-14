@@ -177,6 +177,107 @@ router.get('/cliente/:id/resumo', async (req, res) => {
   }
 });
 
+router.get('/hoje', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT
+        a.id,
+        a.data,
+        a.hora,
+        c.nome_razao AS cliente_nome,
+        c.telefone,
+        s.descricao AS servico_nome,
+        col.nome AS colaborador_nome
+      FROM agendamentos a
+      INNER JOIN clientes c
+        ON c.id = a.cliente_id
+      LEFT JOIN servico s
+        ON s.id = a.servico_id
+      LEFT JOIN colaboradores col
+        ON col.id = a.colaboradores_id
+      WHERE a.data = CURDATE()
+      AND a.status = 'CONFIRMADO'
+      ORDER BY a.hora
+    `);
+
+    console.log('Agenda do dia:', rows);
+
+    res.json(rows);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'Erro ao buscar agenda do dia'
+    });
+  }
+});
+
+router.get('/quantidade-hoje', async (req, res) => {
+  try {
+
+    const [rows] = await pool.query(`
+      SELECT COUNT(*) AS total
+      FROM agendamentos
+      WHERE data = CURDATE()
+      AND status = 'CONFIRMADO'
+    `);
+
+    res.json(rows[0]);
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      error: 'Erro ao contar agendamentos'
+    });
+  }
+});
+router.get('/lista-espera', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT
+        a.id,
+        c.nome_razao AS cliente,
+        c.telefone,
+        s.descricao AS servico,
+        a.observacoes
+      FROM agendamentos a
+      INNER JOIN clientes c ON c.id = a.cliente_id
+      LEFT JOIN servico s ON s.id = a.servico_id
+      WHERE a.data = CURDATE()
+      AND a.status = 'ESPERA'
+      ORDER BY a.hora
+    `);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'Erro ao buscar lista de espera'
+    });
+  }
+});
+
+router.put('/confirmar/:id', async (req, res) => {
+  try {
+
+    await pool.query(`
+      UPDATE agendamentos
+      SET status = 'CONFIRMADO'
+      WHERE id = ?
+    `, [req.params.id]);
+
+    res.json({
+      message: 'Agendamento confirmado'
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'Erro ao confirmar agendamento'
+    });
+  }
+});
 
 
 module.exports = router;

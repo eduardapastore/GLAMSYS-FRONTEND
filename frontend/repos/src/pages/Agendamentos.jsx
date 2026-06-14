@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import FullCalendar from '@fullcalendar/react';
-import listPlugin from '@fullcalendar/list'; 
-import dayGridPlugin from '@fullcalendar/daygrid'; 
+import listPlugin from '@fullcalendar/list';
+import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import ptBrLocale from "@fullcalendar/core/locales/pt-br";
 import toast, { Toaster } from 'react-hot-toast';
@@ -89,49 +89,15 @@ const Agendamentos = () => {
         telefone: '(71) 95555-4444'
       }
     }
-    
+
   ]);
 
   // DUMMY DATA DA LISTA DE ESPERA
-  const [listaEspera, setListaEspera] = useState([
-  {
-    id: 'wait-1',
-    cliente: 'Mariana Costa',
-    servico: 'Progressiva',
-    telefone: '(71) 98888-1111',
-    observacao: 'Horário Preferido: 15h'
-  },
-  {
-    id: 'wait-2',
-    cliente: 'João Pedro',
-    servico: 'Corte Degradê',
-    telefone: '(75) 97777-2222',
-    observacao: 'Horário Preferido: 14h'
-  },
-  {
-    id: 'wait-3',
-    cliente: 'João Pedro',
-    servico: 'Corte Degradê',
-    telefone: '(75) 97777-2222',
-    observacao: 'Horário Preferido: 14h'
-  },
-  {
-    id: 'wait-4',
-    cliente: 'João Pedro',
-    servico: 'Corte Degradê',
-    telefone: '(75) 97777-2222',
-    observacao: 'Horário Preferido: 14h'
-  },
-  {
-    id: 'wait-5',
-    cliente: 'João Pedro',
-    servico: 'Corte Degradê',
-    telefone: '(75) 97777-2222',
-    observacao: 'Horário Preferido: 14h'
-  }
-]);
+  const [listaEspera, setListaEspera] = useState([]);
+  const [agendamentosHoje, setAgendamentosHoje] = useState(0);
 
-// DADOS
+
+  // DADOS
   const [servicos, setServicos] = useState([]);
   const [colaboradores, setColaborador] = useState([]);
   const [clientes, setClientes] = useState([]);
@@ -155,35 +121,61 @@ const Agendamentos = () => {
   const [telefone, setTelefone] = useState('');
 
   // CALENDÁRIO
-  const [viewMode, setViewMode] = useState('listDay'); 
-  useEffect(() => {
-    // Carregar Serviços
-    axios.get('http://localhost:3000/servicos')
-      .then(res => setServicos(res.data))
-      .catch(() => toast.error("Erro ao carregar serviços"));
+  const carregarDados = async () => {
+    try {
 
-    // Carregar Colaboradores
-    axios.get('http://localhost:3000/colaboradores')
-      .then(res => setColaborador(res.data))
-      .catch(() => toast.error("Erro ao carregar colaboradores"));
+      const espera = await axios.get(
+        'http://localhost:3000/agendamentos/lista-espera'
+      );
 
-    // Carregar Detalhes dos Agendamentos
-    axios.get('http://localhost:3000/agendamentos/detalhes')
-      .then((response) => {
-        const eventosBD = response.data.map((ag) => ({
+      setListaEspera(espera.data);
+
+      const agenda = await axios.get(
+        'http://localhost:3000/agendamentos/hoje'
+      );
+
+      const eventosBD = agenda.data.map((ag) => {
+
+        const dataFormatada = ag.data.split('T')[0];
+      
+        return {
           id: ag.id,
-          title: ag.cliente_nome || "Sem nome",
-          start: `${ag.data}T${ag.hora}`,
+          title: ag.cliente_nome,
+          start: `${dataFormatada}T${ag.hora}`,
           extendedProps: {
-            observacao: ag.servico_nome || '',
-            colaborador: ag.colaborador_nome || '',
-            cliente: ag.cliente_nome || '',
-            telefone: ag.telefone || ''
+            cliente: ag.cliente_nome,
+            telefone: ag.telefone,
+            observacao: ag.servico_nome,
+            colaborador: ag.colaborador_nome
           }
-        }));
-        setEventos(eventosBD);
-      })
-      .catch(() => toast.error("Erro ao carregar agendamentos!"));
+        };
+      });
+      console.log("Agenda do dia:", agenda.data);
+      setEventos(eventosBD);
+
+      const qtd = await axios.get(
+        'http://localhost:3000/agendamentos/quantidade-hoje'
+      );
+
+      setAgendamentosHoje(qtd.data.total);
+
+    } catch (error) {
+      console.error(error);
+      toast.error('Erro ao carregar dados');
+    }
+  };
+
+  const [viewMode, setViewMode] = useState('listDay');
+  useEffect(() => {
+
+    axios.get('http://localhost:3000/servicos')
+      .then(res => setServicos(res.data));
+
+    axios.get('http://localhost:3000/colaboradores')
+      .then(res => setColaborador(res.data));
+
+    carregarDados();
+
   }, []);
 
   const salvarAgendamento = () => {
@@ -227,7 +219,7 @@ const Agendamentos = () => {
   //   }
   // };
 
-// FUNÇÃO DO MODAL DE CLIQUE NA DATA :D
+  // FUNÇÃO DO MODAL DE CLIQUE NA DATA :D
   const handleDateClick = (info) => {
     const eventoEncontrado = eventos.find((e) => e.start.startsWith(info.dateStr));
     if (eventoEncontrado) {
@@ -242,153 +234,149 @@ const Agendamentos = () => {
     }
   };
 
-// FUNÇÃO PRA ENVIO DE LINK DE PAGAMENTO VIA WHATSAPP
-const enviarLinkPagamento = (evento) => {
-  const dados = evento.extendedProps;
+  // FUNÇÃO PRA ENVIO DE LINK DE PAGAMENTO VIA WHATSAPP
+  const enviarLinkPagamento = (evento) => {
+    const dados = evento.extendedProps;
 
-  // 1. Pega o telefone e limpa caracteres não numéricos
-  const telefoneRaw = dados?.telefone || "";
-  const telefone = telefoneRaw.replace(/\D/g, '');
+    // 1. Pega o telefone e limpa caracteres não numéricos
+    const telefoneRaw = dados?.telefone || "";
+    const telefone = telefoneRaw.replace(/\D/g, '');
 
-  const nomeCompleto = dados?.cliente || evento.title || "Cliente";
-  const nomeCliente = nomeCompleto.split('(')[0].trim();
-  const servico = dados?.observacao || "seu procedimento";
+    const nomeCompleto = dados?.cliente || evento.title || "Cliente";
+    const nomeCliente = nomeCompleto.split('(')[0].trim();
+    const servico = dados?.observacao || "seu procedimento";
 
-  // Verificação de segurança
-  if (!telefone || telefone.length < 10) {
-    toast.error("Telefone inválido ou não cadastrado!");
-    return;
-  }
+    // Verificação de segurança
+    if (!telefone || telefone.length < 10) {
+      toast.error("Telefone inválido ou não cadastrado!");
+      return;
+    }
 
-  // mensagem personalizada - não aguento maaaaaaaaaaaaaaaaais
- const mensagem = `Olá, ${nomeCliente}! \nTudo bem? Segue o link para o pagamento do seu agendamento de *${servico}*. Lembrando que o valor da taxa de No-Show já está incluso no serviço, e na falta sem motivos ou reagendamento - pelo menos 3h (três horas) antes - o estorno contará apenas com o valor do serviço que seria prestado. \nConfirmando o pagamento, sua vaga estará garantida!`;
-  
-  const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
+    // mensagem personalizada - não aguento maaaaaaaaaaaaaaaaais
+    const mensagem = `Olá, ${nomeCliente}! \nTudo bem? Segue o link para o pagamento do seu agendamento de *${servico}*. Lembrando que o valor da taxa de No-Show já está incluso no serviço, e na falta sem motivos ou reagendamento - pelo menos 3h (três horas) antes - o estorno contará apenas com o valor do serviço que seria prestado. \nConfirmando o pagamento, sua vaga estará garantida!`;
 
-  // abre plmds
-  const win = window.open(url, '_blank');
-  
-  if (win) {
-    win.focus();
-    toast.success("Aviso de pagamento enviado!");
-  } else {
-    // Se o window.open falhar (bloqueio de pop-up), o toast avisa
-    toast.error("Pop-up bloqueado! Permita pop-ups para abrir o WhatsApp.");
-  }
-};
+    const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
 
-// FUNÇÃO DE PERSONALIZAÇÃO DO EVENTO NA AGENDA DO DIA
-const renderEventContent = (eventInfo) => {
-  const { colaborador, observacao, cliente } = eventInfo.event.extendedProps;
+    // abre plmds
+    const win = window.open(url, '_blank');
 
-  return (
-    /* Usamos w-full e justify-between para os botões irem para o final da linha */
-    <div className="flex justify-between items-center w-full group pl-1">
-      
-      {/* Container das informações (Nome, Serviço, Colaborador) */}
-      <div className="flex flex-col min-w-0 flex-1">
-        {/* Nome do Cliente - Ocupa a linha principal */}
-        <span className="text-gray-800 font-bold text-sm truncate leading-tight">
-          {cliente || eventInfo.event.title}
-        </span>
-        
-        {/* Linha de detalhes (Serviço e Colaborador) */}
-        <div className="flex gap-2 items-center leading-none mt-0.5">
-           <span className="text-[10px] text-amber-700 font-medium truncate uppercase">
-             {observacao || 'Procedimento'}
-           </span>
-           <span className="text-[10px] text-gray-400 truncate">
-             • {colaborador || 'S/ Profissional'}
-           </span>
+    if (win) {
+      win.focus();
+      toast.success("Aviso de pagamento enviado!");
+    } else {
+      // Se o window.open falhar (bloqueio de pop-up), o toast avisa
+      toast.error("Pop-up bloqueado! Permita pop-ups para abrir o WhatsApp.");
+    }
+  };
+
+  // FUNÇÃO DE PERSONALIZAÇÃO DO EVENTO NA AGENDA DO DIA
+  const renderEventContent = (eventInfo) => {
+    const { colaborador, observacao, cliente } = eventInfo.event.extendedProps;
+
+    return (
+      /* Usamos w-full e justify-between para os botões irem para o final da linha */
+      <div className="flex justify-between items-center w-full group pl-1">
+
+        {/* Container das informações (Nome, Serviço, Colaborador) */}
+        <div className="flex flex-col min-w-0 flex-1">
+          {/* Nome do Cliente - Ocupa a linha principal */}
+          <span className="text-gray-800 font-bold text-sm truncate leading-tight">
+            {cliente || eventInfo.event.title}
+          </span>
+
+          {/* Linha de detalhes (Serviço e Colaborador) */}
+          <div className="flex gap-2 items-center leading-none mt-0.5">
+            <span className="text-[10px] text-amber-700 font-medium truncate uppercase">
+              {observacao || 'Procedimento'}
+            </span>
+            <span className="text-[10px] text-gray-400 truncate">
+              • {colaborador || 'S/ Profissional'}
+            </span>
+          </div>
+        </div>
+
+        {/* Botões de Ação - Ficam flutuando à direita no hover */}
+        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-4">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              enviarLinkPagamento(eventInfo.event);
+            }}
+            className="p-1.5 text-green-600 hover:bg-green-50 rounded-md transition-colors"
+            title='Enviar WhatsApp'
+          >
+            <i className="bi bi-whatsapp text-sm"></i>
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toast.error("Agendamento cancelado");
+            }}
+            className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
+            title="Cancelar"
+          >
+            <i className="bi bi-trash text-sm"></i>
+          </button>
         </div>
       </div>
+    );
+  };
 
-      {/* Botões de Ação - Ficam flutuando à direita no hover */}
-      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-4">
-        <button 
-          onClick={(e) => { 
-            e.stopPropagation(); 
-            enviarLinkPagamento(eventInfo.event); 
-          }}
-          className="p-1.5 text-green-600 hover:bg-green-50 rounded-md transition-colors"
-          title='Enviar WhatsApp'
-        >
-          <i className="bi bi-whatsapp text-sm"></i>
-        </button>
-        
-        <button 
-          onClick={(e) => { 
-            e.stopPropagation(); 
-            toast.error("Agendamento cancelado"); 
-          }}
-          className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
-          title="Cancelar"
-        >
-          <i className="bi bi-trash text-sm"></i>
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Função para clique no EVENTO (Lista ou Calendário)
+  // Função para clique no EVENTO (Lista ou Calendário)
   const handleEventClick = (info) => {
     setEventoSelecionado({
       title: info.event.title,
       start: info.event.startStr || info.event.start,
-      ...info.event.extendedProps, 
+      ...info.event.extendedProps,
     });
   };
 
   // FUNÇÃO DE MOVER A LISTA DE ESPERA PRA A AGENDA 
-const moverParaAgendamentos = (item) => {
-  const agora = new Date();
-  const dataHoje = agora.toISOString().split('T')[0];
-  const horaAgora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const moverParaAgendamentos = async (item) => {
 
-  const novoEvento = {
-    id: `moved-${Date.now()}`,
-    title: `${item.cliente} (${item.servico})`,
-    start: `${dataHoje}T${horaAgora}:00`,
-    extendedProps: {
-      cliente: item.cliente,
-      observacao: item.servico,
-      telefone: item.telefone,
-      colaborador: 'A definir'
+    try {
+
+      await axios.put(
+        `http://localhost:3000/agendamentos/confirmar/${item.id}`
+      );
+
+      toast.success('Agendamento confirmado!');
+
+      carregarDados();
+
+    } catch (error) {
+
+      toast.error('Erro ao confirmar agendamento');
+
     }
   };
 
-  setEventos(prev => [...prev, novoEvento]);
-  setListaEspera(prev => prev.filter(i => i.id !== item.id));
+  const avisarVagaDisponivel = (pessoaEspera) => {
+    const telefone = pessoaEspera.telefone?.replace(/\D/g, '');
 
-  toast.success(`${item.cliente} movido para a agenda!`);
-};
+    if (!telefone) {
+      return toast.error("Essa pessoa não tem telefone cadastrado!");
+    }
 
-const avisarVagaDisponivel = (pessoaEspera) => {
-  const telefone = pessoaEspera.telefone?.replace(/\D/g, '');
-  
-  if (!telefone) {
-    return toast.error("Essa pessoa não tem telefone cadastrado!");
-  }
+    const mensagem = `Olá, ${pessoaEspera.cliente}! \nPassando para avisar que *acabou de surgir uma vaga* para hoje! \nComo você estava na nossa lista de espera para *${pessoaEspera.servico}*, imaginei que teria interesse. Gostaria de aproveitar esse horário? ✅`;
 
-  const mensagem = `Olá, ${pessoaEspera.cliente}! \nPassando para avisar que *acabou de surgir uma vaga* para hoje! \nComo você estava na nossa lista de espera para *${pessoaEspera.servico}*, imaginei que teria interesse. Gostaria de aproveitar esse horário? ✅`;
+    const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
 
-  const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
-  
-  const win = window.open(url, '_blank');
+    const win = window.open(url, '_blank');
 
-  if (win) {
-    win.focus();
-    toast("Convite enviado!", { icon: '📩' });
-  } else {
-    toast.error("Pop-up bloqueado!");
-  }
-};
+    if (win) {
+      win.focus();
+      toast("Convite enviado!", { icon: '📩' });
+    } else {
+      toast.error("Pop-up bloqueado!");
+    }
+  };
 
 
   return (
     <main className='flex w-screen h-screen overflow-hidden'>
-      <Navbar className="w-1/3"/>
+      <Navbar className="w-1/3" />
       <Toaster position="top-center" />
 
       <div className="p-6 flex-1 overflow-y-hidden bg-transparent">
@@ -416,7 +404,7 @@ const avisarVagaDisponivel = (pessoaEspera) => {
               </span>
 
               {/* BOTÃO PARA TROCAR DE VISTA */}
-              <button 
+              <button
                 onClick={() => setViewMode(viewMode === 'listDay' ? 'dayGridMonth' : 'listDay')}
                 className="text-[10px] bg-amber-600 px-2 py-1 rounded hover:bg-amber-700 font-bold text-amber-50 flex items-center gap-1 transition-all"
               >
@@ -427,7 +415,7 @@ const avisarVagaDisponivel = (pessoaEspera) => {
 
             <div className="flex-1 overflow-y-auto p-2 custom-calendar-compact">
               <FullCalendar
-                key={viewMode} 
+                key={viewMode}
                 locale={ptBrLocale}
                 plugins={[listPlugin, dayGridPlugin, interactionPlugin]}
                 initialView={viewMode}
@@ -448,50 +436,55 @@ const avisarVagaDisponivel = (pessoaEspera) => {
             <div className="bg-amber-50 border p-3 rounded-lg shadow-md ">
               <h4 className="text-[10px] font-black text-gray-800 uppercase mb-2">Resumo</h4>
               <div className="flex justify-between text-sm">
-                  <span className="text-gray-700 font-bold text-base uppercase">Agendamentos MENSAIS </span>
-                  <span className="font-bold text-lg text-amber-700">{eventos.length}</span>
+                <span className="text-gray-700 font-bold text-base uppercase">
+                  Agendamentos do Dia
+                </span>
+
+                <span className="font-bold text-lg text-amber-700">
+                  {agendamentosHoje}
+                </span>
               </div>
             </div>
 
             <div className='bg-amber-50 rounded-lg border border-amber-200 p-2 shadow-md'>
               {/* LISTA DE ESPERA DINÂMICA */}
-                <div className='bg-gray-50 p-1 border-b'>
-                  <h3 className='uppercase text-xs font-bold text-amber-600 flex items-center gap-2'>
-                    <i className="bi bi-hourglass-split"></i> Lista de espera ({listaEspera.length})
-                  </h3>
-                </div>
-                
-                <div className='p-2 flex flex-col gap-2 overflow-y-scroll max-h-[300px] bg-transparent '>
-                  {listaEspera.length === 0 ? (
-                    <p className='text-center text-gray-400 text-xs py-10'>Ninguém na espera</p>
-                  ) : (
-                    listaEspera.map((item) => (
-                      <div key={item.id} className='p-3 bg-amber-50/50 border border-amber-100 rounded-lg group hover:border-amber-400 transition-all'>
-                        <div className='flex justify-between items-start'>
-                          <div>
-                            <p className='font-bold text-sm text-gray-800'>{item.cliente}</p>
-                            <p className='text-[10px] text-amber-700 font-medium'>{item.servico}</p>
-                            {item.observacao && <p className='text-[10px] text-gray-500 italic mt-1'>"{item.observacao}"</p>}
-                          </div>
-                          
-                          <button 
-                            type="button" // Garante que não dispare submit se estiver em um form
-                            onClick={() => {
-                              // Executa as funções em sequência
-                              avisarVagaDisponivel(item); // primeiro abre o WhatsApp
-                              setTimeout(() => moverParaAgendamentos(item), 100);
-                              toast.success("Notificação enviada e cliente agendado!", { duration: 4000 });
-                            }}
-                            className='bg-white p-1.5 rounded-md shadow-sm border border-amber-200 text-amber-600 hover:bg-amber-600 hover:text-white transition-all focus:outline-none'
-                            title='Agendar agora'
-                          >
-                            <i className="bi bi-calendar-check-fill text-sm"></i>
-                          </button>
+              <div className='bg-gray-50 p-1 border-b'>
+                <h3 className='uppercase text-xs font-bold text-amber-600 flex items-center gap-2'>
+                  <i className="bi bi-hourglass-split"></i> Lista de espera ({listaEspera.length})
+                </h3>
+              </div>
+
+              <div className='p-2 flex flex-col gap-2 overflow-y-scroll max-h-[300px] bg-transparent '>
+                {listaEspera.length === 0 ? (
+                  <p className='text-center text-gray-400 text-xs py-10'>Ninguém na espera</p>
+                ) : (
+                  listaEspera.map((item) => (
+                    <div key={item.id} className='p-3 bg-amber-50/50 border border-amber-100 rounded-lg group hover:border-amber-400 transition-all'>
+                      <div className='flex justify-between items-start'>
+                        <div>
+                          <p className='font-bold text-sm text-gray-800'>{item.cliente}</p>
+                          <p className='text-[10px] text-amber-700 font-medium'>{item.servico}</p>
+                          {item.observacao && <p className='text-[10px] text-gray-500 italic mt-1'>"{item.observacao}"</p>}
                         </div>
+
+                        <button
+                          type="button" // Garante que não dispare submit se estiver em um form
+                          onClick={() => {
+                            // Executa as funções em sequência
+                            avisarVagaDisponivel(item); // primeiro abre o WhatsApp
+                            setTimeout(() => moverParaAgendamentos(item), 100);
+                            toast.success("Notificação enviada e cliente agendado!", { duration: 4000 });
+                          }}
+                          className='bg-white p-1.5 rounded-md shadow-sm border border-amber-200 text-amber-600 hover:bg-amber-600 hover:text-white transition-all focus:outline-none'
+                          title='Agendar agora'
+                        >
+                          <i className="bi bi-calendar-check-fill text-sm"></i>
+                        </button>
                       </div>
-                    ))
-                  )}
-                </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -572,7 +565,7 @@ const avisarVagaDisponivel = (pessoaEspera) => {
                       {eventoSelecionado.start ? (
                         <>
                           {new Date(eventoSelecionado.start).toLocaleDateString('pt-BR')} às {' '}
-                          {new Date(eventoSelecionado.start).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}
+                          {new Date(eventoSelecionado.start).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                         </>
                       ) : 'Horário não disponível'}
                     </p>

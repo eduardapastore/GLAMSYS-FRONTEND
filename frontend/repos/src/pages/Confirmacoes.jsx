@@ -70,10 +70,29 @@ const Confirmacoes = () => {
         setModalAberto(true);
     };
 
-    const confirmarPagamento = () => {
-        toast.success(`Pagamento de ${ordemSelecionada.cliente_nome} confirmado!`);
-        setModalAberto(false);
+    const confirmarPagamento = async () => {
 
+        try {
+    
+            await axios.put(
+                `http://localhost:3000/ordens_servico/fechar/${ordemSelecionada.id}`
+            );
+    
+            toast.success(
+                `${ordemSelecionada.cliente_nome} confirmado com sucesso!`
+            );
+    
+            setModalAberto(false);
+    
+            carregarOrdens();
+    
+        } catch (error) {
+    
+            console.error(error);
+    
+            toast.error('Erro ao confirmar atendimento');
+    
+        }
     };
 
     const ordensFiltradas =

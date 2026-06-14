@@ -413,7 +413,7 @@ const Clientes = () => {
                   <div className="flex flex-col justify-center">
                     <p className='text-[10px] text-amber-600 uppercase font-black tracking-widest mb-1'>Nome Completo</p>
                     <p className='text-lg font-bold text-gray-900 leading-tight'>
-                      {clienteSelecionado.nome_razao}
+                      {clienteSelecionado.nome_razao} - {clienteSelecionado.id}
                     </p>
                   </div>
 

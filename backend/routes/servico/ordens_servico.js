@@ -53,4 +53,35 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.put('/fechar/:id', async (req, res) => {
+  try {
+
+    const [result] = await pool.query(`
+      UPDATE ordens_servico
+      SET status = 'FECHADA'
+      WHERE id = ?
+      AND status = 'ABERTA'
+    `, [req.params.id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        error: 'Ordem não encontrada ou já fechada'
+      });
+    }
+
+    res.json({
+      message: 'Ordem de serviço fechada com sucesso'
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      error: 'Erro ao fechar ordem de serviço'
+    });
+
+  }
+});
+
 module.exports = router;
