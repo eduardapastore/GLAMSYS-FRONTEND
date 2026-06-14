@@ -395,10 +395,10 @@ const avisarVagaDisponivel = (pessoaEspera) => {
         <div className='flex justify-between items-center mb-6'>
           <h2 className='font-bold text-2xl text-gray-800'>Agendamentos</h2>
           <div className='flex gap-2'>
-            <button className='p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50'>
+            {/* <button className='p-2 rounded-md hover:bg-gray-700 hover:text-gray-50'>
               <i className="bi bi-clipboard2-data"></i>
               Relatório
-            </button>
+            </button> */}
             <button onClick={() => setModalAberto(true)} className='bg-amber-600 font-semibold text-white px-4 py-2 rounded-md hover:bg-amber-700 flex items-center gap-2 text-sm transition-all'>
               <i className="bi bi-calendar-plus"></i> Novo Agendamento
             </button>
@@ -410,26 +410,17 @@ const avisarVagaDisponivel = (pessoaEspera) => {
           {/* COLUNA ESQUERDA: Agenda Estilo Tabela (Ocupa 70%) */}
           <div className='flex-[3] bg-amber-50 rounded-lg shadow-md border border-gray-200 flex flex-col'>
             {/* HEADER DO CARD COM O BOTÃO DE ALTERNÂNCIA */}
-            <div className="p-2 border-b bg-transparent flex justify-between items-center">
+            <div className="p-2 bg-transparent flex justify-between items-center">
               <span className="text-xs font-bold text-gray-500 uppercase">
                 {viewMode === 'listDay' ? 'Agenda do Dia' : 'Agenda do Mês'}
               </span>
-
-              {/* BOTÃO PARA TROCAR DE VISTA */}
-              <button 
-                onClick={() => setViewMode(viewMode === 'listDay' ? 'dayGridMonth' : 'listDay')}
-                className="text-[10px] bg-amber-600 px-2 py-1 rounded hover:bg-amber-700 font-bold text-amber-50 flex items-center gap-1 transition-all"
-              >
-                <i className={`bi ${viewMode === 'listDay' ? 'bi-calendar3' : 'bi-list-ul'}`}></i>
-                {viewMode === 'listDay' ? 'MÊS' : 'DIA'}
-              </button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-2 custom-calendar-compact">
               <FullCalendar
                 key={viewMode} 
                 locale={ptBrLocale}
-                plugins={[listPlugin, dayGridPlugin, interactionPlugin]}
+                plugins={[listPlugin, interactionPlugin]}
                 initialView={viewMode}
                 height="100%"
                 events={eventos}
@@ -445,7 +436,7 @@ const avisarVagaDisponivel = (pessoaEspera) => {
           {/* COLUNA DIREITA: LISTA DE ESPERA */}
           <div className='flex-1 flex flex-col gap-4 max-w-[500px]'>
             {/* Card de Informação Rápida */}
-            <div className="bg-amber-50 border p-3 rounded-lg shadow-md ">
+            <div className="bg-amber-50 p-3 rounded-lg shadow-md ">
               <h4 className="text-[10px] font-black text-gray-800 uppercase mb-2">Resumo</h4>
               <div className="flex justify-between text-sm">
                   <span className="text-gray-700 font-bold text-base uppercase">Agendamentos MENSAIS </span>
@@ -455,7 +446,7 @@ const avisarVagaDisponivel = (pessoaEspera) => {
 
             <div className='bg-amber-50 rounded-lg border border-amber-200 p-2 shadow-md'>
               {/* LISTA DE ESPERA DINÂMICA */}
-                <div className='bg-gray-50 p-1 border-b'>
+                <div className='p-1'>
                   <h3 className='uppercase text-xs font-bold text-amber-600 flex items-center gap-2'>
                     <i className="bi bi-hourglass-split"></i> Lista de espera ({listaEspera.length})
                   </h3>

@@ -16,10 +16,11 @@ const AIAssistant = () => {
 
     // URLs das imagens fixas controladas para o retorno do pipeline
     const resultadosFixos = {
-        'avaliacao-geral': 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=600&q=80',
-        'cor-loiro': 'https://images.unsplash.com/photo-1605497746444-ac9da5848ba7?w=600&q=80',
-        'cor-ruivo': 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&q=80',
-        'cor-platinado': 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&q=80'
+        'avaliacao-geral': '/src/imgs/result3.png',
+        'cor-loiro': '/src/imgs/result2.png',
+        'cor-ruivo': '/src/imgs/result1.png',
+        'cor-platinado': '/src/imgs/result2.png',
+        'cor-castanho': '/src/imgs/result1.png'
     };
 
     const estilosCabelo = [
@@ -31,26 +32,29 @@ const AIAssistant = () => {
             prompt: `Create a clean, modern, and visually structured infographic titled "HAIRSTYLE ANALYSIS" using the attached portrait as the main subject. Remove the original background and replace it with a neutral, soft gray or off-white backdrop to keep focus on the face. Ensure consistent studio lighting, sharp facial details, and natural skin tones. Layout should be symmetrical, grid-based, and easy to scan. Use a minimal UI style similar to grooming or men’s style guides. Avoid long paragraphs—prioritize short labels, icons, and visual comparisons.`
         },
         {
+           id: 'cor-castanho',
+            nome: 'Previsão de Cor: Castanho',
+            categoria: 'cor',
+            prompt: 'Simulação realista de mudança de pigmentação capilar para tonalidade castanho escuro'
+        },
+        {
             id: 'cor-loiro',
             nome: 'Previsão de Cor: Loiro Mel',
-            icon: '👱‍♂️',
             categoria: 'cor',
             prompt: 'Simulação realista de mudança de pigmentação capilar para tonalidade loiro mel'
         },
         {
             id: 'cor-ruivo',
-            nome: 'Previsão de Cor: Ruivo Acobreado',
-            icon: '🧑‍🦰',
+            nome: 'Previsão de Cor: Ruivo',
             categoria: 'cor',
             prompt: 'Simulação realista de mudança de pigmentação capilar para tonalidade ruivo acobreado'
         },
         {
             id: 'cor-platinado',
-            nome: 'Previsão de Cor: Platinado Polar',
-            icon: '🧑‍🦳',
+            nome: 'Previsão de Cor: Platinado',
             categoria: 'cor',
             prompt: 'Simulação realista de mudança de pigmentação capilar para tonalidade platinado polar'
-        }
+        },
     ];
 
     // API DE FERIADOS + ASSOCIAÇÃO DE PROCEDIMENTOS

@@ -188,7 +188,7 @@ const Estoque = () => {
           <div className="flex gap-2">
             <input 
               type="text" placeholder=" Pesquisar..." 
-              className="w-64 p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
+              className="w-64 bg-amber-50 p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
               value={search} onChange={(e) => setSearch(e.target.value)}
             />
             <button className="p-2 w-10 h-10 bg-amber-600 rounded-md text-white hover:bg-amber-700 transition-all" onClick={filtrar}>
@@ -198,7 +198,7 @@ const Estoque = () => {
         </div>
 
         {/* ABAS E BOTÕES */}
-        <div className='flex justify-between items-end border-b mb-6'>
+        <div className='flex justify-between items-end mb-6'>
           <div className="flex gap-6">
             {["itens", "fornecedores", "produtos"].map((t) => (
               <button key={t} onClick={() => setAba(t)} className={`pb-2 text-sm font-bold uppercase transition-all ${aba === t ? "border-b-4 border-amber-600 text-amber-600" : "text-gray-400"}`}>
@@ -240,7 +240,7 @@ const Estoque = () => {
                   </button>
                 </div>
             </div>
-            <div className='bg-white rounded-md shadow-md border'>
+            <div className='bg-white rounded-md shadow-md'>
               {fornecedores.map(f => (
                 <div key={f.id} className="p-4 border-b last:border-0 flex justify-between items-center">
                   <div>
@@ -271,7 +271,7 @@ const Estoque = () => {
                 </div>
               </div>
               {produtos.map(p => (
-                <div key={p.id} className="p-3 border-b last:border-0 flex justify-between items-center align-middle bg-white mb-2 rounded-md shadow-sm">
+                <div key={p.id} className="p-3 flex justify-between items-center align-middle bg-white mb-2 rounded-md shadow-sm">
                   <div>
                     <p className="font-bold text-gray-800">{p.nome}</p>
                     <p className="text-xs text-gray-400">{p.descricao}</p>
@@ -417,7 +417,7 @@ const Estoque = () => {
       {isModalProduto && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-md shadow-xl flex flex-col max-h-[90vh]">
-            <div className='flex justify-between items-center p-6 border-b'>
+            <div className='flex justify-between items-center p-6'>
               <h2 className='font-bold uppercase text-gray-800 text-lg'>Novo Produto no Catálogo</h2>
               <button onClick={() => setIsModalProduto(false)} className="text-gray-400 hover:text-red-500"><i className="bi bi-x-lg"></i></button>
             </div>
@@ -461,7 +461,7 @@ const Estoque = () => {
                  </div>
               </div>
             </div>
-            <div className="p-6 border-t">
+            <div className="p-6">
               <button onClick={salvarProduto} className="w-full bg-green-600 text-white py-2 rounded-md font-bold hover:bg-green-700 shadow-md">Salvar Produto</button>
             </div>
           </div>

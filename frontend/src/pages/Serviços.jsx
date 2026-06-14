@@ -139,9 +139,9 @@ const Serviços = () => {
         <div className='flex justify-between mb-6'>
           <h2 className='font-bold text-2xl text-gray-800'>Serviços</h2>
           <div className='flex gap-2 text-xs'>
-            <button className='p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50 flex items-center gap-1'>
+            {/* <button className='p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50 flex items-center gap-1'>
               <i className="bi bi-clipboard2-data"></i> Relatório
-            </button>
+            </button> */}
             <button
               onClick={() => setModalAddServico(true)}
               className='p-2 rounded-md font-semibold bg-amber-600 text-amber-50 hover:bg-amber-700 flex items-center gap-1'
@@ -160,7 +160,7 @@ const Serviços = () => {
               placeholder=" Pesquisar..."
               value={pesquisa}
               onChange={(e) => setPesquisa(e.target.value)}
-              className="w-64 border border-gray-300 p-2 text-sm rounded-md outline-none focus:border-amber-600"
+              className="w-64 bg-amber-50 shadow-md p-2 text-sm rounded-md outline-none focus:border-amber-600"
             />
             <button
               onClick={filtrarServicos}

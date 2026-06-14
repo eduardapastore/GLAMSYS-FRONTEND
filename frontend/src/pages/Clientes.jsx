@@ -252,10 +252,10 @@ const Clientes = () => {
         <div className='flex justify-between mb-3'>
           <h1 className='font-bold text-2xl text-gray-900' >Clientes</h1>
           <div className='flex gap-2'>
-            <button className='p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50'>
+            {/* <button className='p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50'>
               <i className="bi bi-clipboard2-data"></i>
               Relatório
-            </button>
+            </button> */}
             <button onClick={() => setisModalAddCliente(true)}
               className='flex gap-2 p-2 font-bold text-xl items-center rounded-md align-middle bg-amber-600 text-gray-50 hover:bg-amber-700 shadow-md'>
               <i className="bi bi-plus-circle text-xs"></i>
@@ -312,7 +312,7 @@ const Clientes = () => {
               placeholder="Pesquisar nome, email, CPF ou telefone..."
               value={pesquisa}
               onChange={(e) => setPesquisa(e.target.value)}
-              className="w-64 border p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
+              className="w-64 bg-amber-50 p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
             />
             <button className="p-1 w-8 h-8 items-center font-bold bg-amber-600 rounded-md text-white hover:bg-amber-700 transition-all">
               <i className="bi bi-search"></i>
