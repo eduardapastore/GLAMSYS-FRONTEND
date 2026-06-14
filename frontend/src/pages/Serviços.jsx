@@ -139,9 +139,9 @@ const Serviços = () => {
         <div className='flex justify-between mb-6'>
           <h2 className='font-bold text-2xl text-gray-800'>Serviços</h2>
           <div className='flex gap-2 text-xs'>
-            <button className='p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50 flex items-center gap-1'>
+            {/* <button className='p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50 flex items-center gap-1'>
               <i className="bi bi-clipboard2-data"></i> Relatório
-            </button>
+            </button> */}
             <button
               onClick={() => setModalAddServico(true)}
               className='p-2 rounded-md font-semibold bg-amber-600 text-amber-50 hover:bg-amber-700 flex items-center gap-1'
@@ -160,7 +160,7 @@ const Serviços = () => {
               placeholder=" Pesquisar..."
               value={pesquisa}
               onChange={(e) => setPesquisa(e.target.value)}
-              className="w-64 border border-gray-300 p-2 text-sm rounded-md outline-none focus:border-amber-600"
+              className="w-64 bg-amber-50 shadow-md p-2 text-sm rounded-md outline-none focus:border-amber-600"
             />
             <button
               onClick={filtrarServicos}
@@ -327,18 +327,11 @@ const Serviços = () => {
             </div>
 
             {/* FOOTER FIXO */}
-            <div className="p-6 border-t border-gray-200 flex gap-2 bg-gray-50 rounded-b-xl">
-              <button
-                type="button"
-                onClick={() => setModalAddServico(false)}
-                className="flex-1 py-2.5 text-gray-500 font-bold hover:bg-gray-200 rounded-lg transition-all"
-              >
-                Cancelar
-              </button>
+            <div className="p-6 w-full border-t border-gray-200 flex gap-2 bg-gray-50 rounded-b-xl">
               <button
                 type="button"
                 onClick={() => { salvarServico(); setModalAddServico(false); }}
-                className="flex-[2] bg-amber-600 text-white font-bold py-2.5 rounded-lg hover:bg-amber-700 shadow-md transition-all"
+                className="w-full flex gap-2 justify-center text-xl bg-green-600 text-white py-3 rounded-md font-bold hover:bg-green-700"
               >
                 Salvar Serviço
               </button>

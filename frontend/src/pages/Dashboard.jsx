@@ -109,7 +109,9 @@ const Dashboard = () => {
       <main className='p-6 w-full h-full overflow-y-auto flex flex-col gap-6'>
         
         {/* TOPO */}
-        
+        <div className='flex justify-between items-center'>
+          <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
+        </div>
 
         <div className='flex gap-2 items-center text-white justify-between'>
             <div className='flex gap-4 bg-gray-950 p-3 text-xs rounded-md items-center shadow-md'>
@@ -170,7 +172,7 @@ const Dashboard = () => {
           `}</style>
 
           {/* FINANCEIRO */}
-          <div className="flex-1 bg-amber-50 p-4 rounded-xl border shadow-sm min-h-[316px] flex flex-col justify-between">
+          <div className="flex-1 bg-amber-50 p-4 rounded-xl shadow-sm min-h-[316px] flex flex-col justify-between">
             <div>
               <p className="text-xs font-bold text-gray-400 uppercase mb-4 tracking-wider">Fluxo de Caixa</p>
               <LineChart width={480} height={160} data={chartData}>
@@ -183,7 +185,7 @@ const Dashboard = () => {
               </LineChart>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-200 mt-2">
+            <div className="grid grid-cols-3 gap-2 pt-2 border-gray-200 mt-2">
               <div className="bg-white/80 p-2 rounded-lg border border-emerald-100">
                 <span className="text-[10px] uppercase font-bold text-emerald-600 block">Entradas</span>
                 <span className="text-sm font-bold text-gray-800">R$ {Number(fluxoCaixa.entradas).toFixed(2)}</span>
@@ -203,7 +205,7 @@ const Dashboard = () => {
 
           {/* CALENDÁRIO */}
           {/* AGENDAMENTOS DO DIA */}
-          <div className='w-full lg:w-[320px] bg-amber-50 p-4 rounded-xl border shadow-sm lg:order-last'>
+          <div className='w-full lg:w-[320px] bg-amber-50 p-4 rounded-xl shadow-sm lg:order-last'>
             <p className="text-xs font-bold text-gray-400 uppercase mb-3 tracking-wider">
               Agendamentos do Dia - <span className="text-amber-700 font-bold">Total {agendamentosHoje.length}</span>
             </p>
