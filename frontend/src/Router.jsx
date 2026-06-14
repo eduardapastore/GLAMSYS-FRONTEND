@@ -13,6 +13,8 @@ import AddColaborador from './pages/AddColaborador';
 import Clientes from './pages/Clientes';
 import Serviços from './pages/Serviços';
 import FolhadePagamento from './pages/FolhadePagamento';
+import AIAssistant from './pages/AIAssistant';
+import LandingPage from './LandingPage';
 
 const Router = () => {
   return (
@@ -20,7 +22,7 @@ const Router = () => {
     <div className='flex'>
       <BrowserRouter>
             <Routes>
-                <Route path='/' element={<Dashboard />} />
+                <Route path='/' element={<LandingPage />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/agendamentos' element={<Agendamentos />} />
@@ -33,6 +35,8 @@ const Router = () => {
                 <Route path='/clientes' element={<Clientes />} />
                 <Route path='/servicos' element={<Serviços />} />
                 <Route path='/folhadepagamento' element={<FolhadePagamento />} />
+                <Route path='/assistenteia' element={<AIAssistant />} />
+                <Route path='/landing' element={<LandingPage />} />
                 <Route path='*' element={<h1>404 - Página Não Encontrada</h1>} />
                 {/* Adiciona do mesmo jeito aqui outras páginas */}
             </Routes>

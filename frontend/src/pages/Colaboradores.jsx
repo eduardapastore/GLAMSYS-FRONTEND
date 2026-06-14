@@ -180,7 +180,7 @@ const Colaboradores = () => {
         <section className='flex gap-4 text-gray-100 mb-4 justify-between items-center'>
           <div className='flex gap-2 items-center'>
 
-            <div className='flex gap-4 bg-gray-950 p-3 text-xs rounded-md items-center shadow-md'>
+            <div className='flex gap-4 bg-amber-800 p-3 text-xs rounded-md items-center shadow-md'>
               <i className="bi bi-people text-xl"></i>
               <div>
                 <p className='font-semibold'>Total de Colaboradores</p>
@@ -188,7 +188,7 @@ const Colaboradores = () => {
               </div>
             </div>
 
-            <div className='flex gap-4 bg-amber-700 p-3 text-xs rounded-md items-center shadow-md'>
+            <div className='flex gap-4 bg-amber-600 p-3 text-xs rounded-md items-center shadow-md'>
               <i className="bi bi-person-add text-xl"></i>
               <div>
                 <p className='font-semibold'>Colaboradores Contratados</p>
@@ -199,10 +199,10 @@ const Colaboradores = () => {
           </div>
 
           <div className='flex gap-2'>
-            <button className='text-gray-700 font-semibold p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50'>
+            {/* <button className='text-gray-700 font-semibold p-2 rounded-md border border-gray-700 hover:bg-gray-700 hover:text-gray-50'>
               <i className="bi bi-clipboard2-data"></i>
               Relatório
-            </button>
+            </button> */}
             <a href='/addcolaborador'>
               <button className='bg-amber-600 flex gap-2 text-sm font-bold text-white p-3 h-10 rounded-md hover:bg-amber-700 items-center'>
                 <i className="bi bi-plus-circle text-xl"></i>
@@ -241,7 +241,7 @@ const Colaboradores = () => {
             <div className="flex gap-2 items-center">
               <input
                 type="text" placeholder=" Pesquisar..."
-                className="w-64 border p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
+                className="w-64 bg-amber-50 p-2 rounded-md text-sm outline-none shadow-sm focus:border-amber-600"
               />
               <button
                 onClick={buscarColaborador}
@@ -269,7 +269,7 @@ const Colaboradores = () => {
               <div
                 key={colaborador.id}
                 onClick={() => abrirModal(colaborador)}
-                className={`border rounded-md p-4 bg-amber-50 shadow-md cursor-pointer hover:border-gray-400  ${viewMode === "LIST" ? "flex items-center gap-4" : ""
+                className={`rounded-md p-4 bg-amber-50 shadow-md cursor-pointer hover:border-gray-400  ${viewMode === "LIST" ? "flex items-center gap-4" : ""
                   }`}
               >
                 <div className='flex gap-2'>
@@ -305,9 +305,7 @@ const Colaboradores = () => {
             {/* Título e Botão de Saída */}
             <div className='flex justify-between mb-2'>
               <h2 className='font-bold text-xl'>{colaboradorSelecionado.nome}</h2>
-              <button onClick={() => setModalOpen(null)}>
-                <i className="bi bi-x-circle-fill text-orange-600 text-xl"></i>
-              </button>
+              <button onClick={() => setModalOpen(null)}><i className="bi bi-x-lg cursor-pointer text-gray-500 hover:text-red-500"></i></button>
             </div>
 
             {/* dados */}
@@ -370,10 +368,10 @@ const Colaboradores = () => {
               </p>
             </div>
 
-            <div className='justify-items-center'>
-              <button className='bg-amber-600 text-white p-2 rounded-md mt-4 hover:bg-amber-700 flex justify-center gap-2'>
-                <i class="bi bi-box-arrow-down"></i>
-                Baixar Dados Completos
+            <div className='justify-items-center align-middle'>
+              <button className='bg-amber-600 text-white p-2 font-semibold rounded-md mt-4 hover:bg-amber-700 flex justify-center gap-2'>
+                <i class="bi bi-box-arrow-down text-base"></i>
+                Baixar Dados do Colaborador
               </button>
             </div>
           </div>
