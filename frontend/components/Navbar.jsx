@@ -35,7 +35,7 @@ const Navbar = () => {
           alt='Profile'
         />
         <div className='flex-1 w-full overflow-hidden'>
-          <p className='text-base font-semibold truncate'>João Pessoa Valensky</p>
+          <p className='text-base font-semibold truncate'>Admin</p>
           <p className='text-xs font-light text-gray-500'>Administrador</p>
         </div>
         <Link to='/login' className="text-gray-400 hover:text-black transition-colors flex-shrink-0">
