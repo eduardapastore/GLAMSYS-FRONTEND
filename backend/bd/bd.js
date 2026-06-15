@@ -1,14 +1,6 @@
-const mysql = require('mysql2/promise'); // versão com Promises
+require('dotenv').config();
+const mysql = require('mysql2/promise');
 
-// Configuração da conexão
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'cleberpsanches',
-  database: 'BD_PROJECT',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+const pool = mysql.createPool(process.env.MYSQL_URL);
 
 module.exports = pool;
