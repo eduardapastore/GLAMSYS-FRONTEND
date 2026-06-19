@@ -7,7 +7,8 @@ import axios from 'axios'
 const FolhadePagamento = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
-
+  const [modalColaboradorOpen, setModalColaboradorOpen] = useState(false);
+  const [colaboradorSelecionado, setColaboradorSelecionado] = useState(null);
   const [lancamento, setLancamento] = useState([]);
   const [colaboradores, setColaboradores] = useState([]);
 
@@ -118,7 +119,11 @@ const FolhadePagamento = () => {
               return (
                 <div
                   key={index}
-                  className="p-4 bg-gray-50 rounded-md flex justify-between items-center shadow-sm hover:border-amber-200 transition-all"
+                  onClick={() => {
+                    setColaboradorSelecionado(item);
+                    setModalColaboradorOpen(true);
+                  }}
+                  className="p-4 bg-gray-50 rounded-md flex justify-between items-center shadow-sm hover:border-amber-200 transition-all cursor-pointer"
                 >
 
                   <div className='w-full flex items-center align-middle justify-between'>
@@ -355,6 +360,135 @@ const FolhadePagamento = () => {
 
       )}
 
+      {modalColaboradorOpen && colaboradorSelecionado && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+
+          <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden">
+
+            <div className="flex justify-between items-center p-5">
+
+              <h3 className="font-bold text-lg text-gray-800 uppercase">
+                Dados do Colaborador
+              </h3>
+
+              <button
+                onClick={() => {
+                  setModalColaboradorOpen(false);
+                  setColaboradorSelecionado(null);
+                }}
+                className="text-gray-500 hover:text-red-500 cursor-pointer"
+              >
+                <i className="bi bi-x-lg"></i>
+              </button>
+
+            </div>
+
+            <div className="p-6 space-y-5">
+
+              <div>
+                <p className="text-xs text-gray-500 uppercase">
+                  Nome
+                </p>
+
+                <p className="font-bold text-gray-800 text-lg">
+                  {colaboradorSelecionado.colaborador_nome}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+
+                <div>
+                  <p className="text-xs text-gray-500 uppercase">
+                    Salário Fixo
+                  </p>
+
+                  <p className="font-semibold text-green-600">
+                    R$ {Number(colaboradorSelecionado.salario_fixo).toFixed(2)}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-gray-500 uppercase">
+                    Comissão
+                  </p>
+
+                  <p className="font-semibold">
+                    {colaboradorSelecionado.porcentagem_comissao}%
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-gray-500 uppercase">
+                    Vale Alimentação
+                  </p>
+
+                  <p className="font-semibold">
+                    R$ {colaboradorSelecionado.vale_alimentacao}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-gray-500 uppercase">
+                    Vale Transporte
+                  </p>
+
+                  <p className="font-semibold">
+                    R$ {colaboradorSelecionado.vale_transporte}
+                  </p>
+                </div>
+
+              </div>
+              
+              <div>
+                <p className="text-xs text-gray-500 uppercase">
+                  Tipo da Chave PIX
+                </p>
+
+                <p className="font-medium">
+                  {colaboradorSelecionado.tipo_chave_pix}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-500 uppercase">
+                  Chave PIX
+                </p>
+
+                <p className="font-medium break-all">
+                  {colaboradorSelecionado.chave_pix}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+
+                <div>
+                  <p className="text-xs text-gray-500 uppercase">
+                    Agência
+                  </p>
+
+                  <p className="font-medium">
+                    {colaboradorSelecionado.agencia}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-gray-500 uppercase">
+                    Conta
+                  </p>
+
+                  <p className="font-medium">
+                    {colaboradorSelecionado.numero_conta}
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
     </main>
   )
 }

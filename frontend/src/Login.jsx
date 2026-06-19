@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, googleProvider } from '/src/firebase.js';
+import { auth, googleProvider } from '/firebase.js';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
 const Login = () => {
@@ -126,7 +126,7 @@ const Login = () => {
             type="button"
             onClick={loginComGoogle}
             disabled={carregando}
-            className="w-full flex items-center justify-center gap-3 bg-slate-900 hover:bg-slate-850 text-slate-200 font-medium py-3 px-4 rounded-xl border border-slate-800 transition-all active:scale-[0.99] text-sm"
+            className="w-full flex cursor-pointer items-center justify-center gap-3 bg-slate-900 hover:bg-slate-850 text-slate-200 font-medium py-3 px-4 rounded-xl border border-slate-800 transition-all active:scale-[0.99] text-sm"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l3.227-3.227C18.29 1.414 15.56 0 12.24 0 5.58 0 0 5.58 0 12.24s5.58 12.24 12.24 12.24c6.96 0 11.57-4.894 11.57-11.79 0-.79-.085-1.39-.189-1.905H12.24z"/>
